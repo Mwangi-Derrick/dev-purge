@@ -6,7 +6,7 @@
 
 ## 🚀 The Problem
 
-If you're a multi-stack developer (Rust 🦀 · Go 🐹 · Node.js 📦 · Docker 🐳), your SSD is silently **hemorrhaging space**.
+If you're a multi-stack developer (Rust 🦀 · Go 🐹 · Node.js 📦 . Python 🐍 · Docker 🐳), your SSD is silently **hemorrhaging space**.
 
 ### Where the 30GB is hiding:
 
