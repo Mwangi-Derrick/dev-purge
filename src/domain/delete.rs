@@ -30,4 +30,3 @@ pub fn delete(findings: &[Finding]) -> DeleteStats {
 fn display_path_for_humans(path: &std::path::Path) -> String {
     path.to_string_lossy().replace('\\', "/")
 }
-

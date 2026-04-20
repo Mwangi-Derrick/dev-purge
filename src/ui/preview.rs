@@ -35,7 +35,13 @@ pub fn print(root: &Path, findings: &[Finding]) {
         let label = size_label(f.bytes);
 
         let line = if label.is_empty() {
-            format!("  {:<width$}  {:>8}  {}", rel, size, bar, width = max_path_len)
+            format!(
+                "  {:<width$}  {:>8}  {}",
+                rel,
+                size,
+                bar,
+                width = max_path_len
+            )
         } else {
             format!(
                 "  {:<width$}  {:>8}  {}  {}",
@@ -57,7 +63,11 @@ pub fn print(root: &Path, findings: &[Finding]) {
 
 pub fn print_summary(recovered: u64, errors: u64) {
     if errors == 0 {
-        println!("{} Recovered {}", "✓".green(), format_bytes(recovered).bold());
+        println!(
+            "{} Recovered {}",
+            "✓".green(),
+            format_bytes(recovered).bold()
+        );
         return;
     }
 
@@ -133,4 +143,3 @@ fn display_path_relative(root: &Path, path: &Path) -> String {
     s = s.replace('\\', "/");
     format!("./{}", s.trim_start_matches("./"))
 }
-

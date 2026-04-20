@@ -82,4 +82,3 @@ fn canonicalize_best_effort(path: &Path) -> PathBuf {
 fn display_path_for_humans(path: &Path) -> String {
     path.to_string_lossy().replace('\\', "/")
 }
-

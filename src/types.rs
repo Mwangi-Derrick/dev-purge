@@ -11,4 +11,3 @@ pub struct DeleteStats {
     pub recovered_bytes: u64,
     pub errors: u64,
 }
-

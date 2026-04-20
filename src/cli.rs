@@ -23,4 +23,3 @@ where
     eprintln!("Usage: dev-purge [--check]");
     bail!("invalid arguments")
 }
-

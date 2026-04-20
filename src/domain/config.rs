@@ -123,4 +123,3 @@ pub fn is_protected_entry_name(name: &OsStr) -> bool {
         )
     )
 }
-

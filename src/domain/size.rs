@@ -33,4 +33,3 @@ fn estimate_dir_size_bytes(dir: &Path) -> u64 {
 
     total
 }
-

@@ -20,4 +20,3 @@ pub fn prompt(total: u64, count: usize) -> Result<bool> {
 
     Ok(matches!(input.trim(), "y" | "Y"))
 }
-

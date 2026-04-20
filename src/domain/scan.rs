@@ -26,7 +26,11 @@ pub fn scan(root: &Path, config: &PurgeConfig) -> Result<Vec<PathBuf>> {
     Ok(out)
 }
 
-fn scan_filter_entry(entry: &DirEntry, patterns: &[Pattern], candidates: &RefCell<Vec<PathBuf>>) -> bool {
+fn scan_filter_entry(
+    entry: &DirEntry,
+    patterns: &[Pattern],
+    candidates: &RefCell<Vec<PathBuf>>,
+) -> bool {
     let name = entry.file_name();
 
     if is_protected_entry_name(name) {
@@ -40,4 +44,3 @@ fn scan_filter_entry(entry: &DirEntry, patterns: &[Pattern], candidates: &RefCel
 
     true
 }
-
