@@ -7,7 +7,7 @@ __pycache__/
 venv/
 env/
 ENV/
-
+target/
 # IDE
 .vscode/
 .idea/
