@@ -1,25 +1,17 @@
-use anyhow::{bail, Result};
+use clap::Parser;
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Mode {
-    Default,
-    Check,
+#[derive(Parser, Debug)]
+#[command(author, version, about, long_about = None)]
+pub struct Cli {
+    /// Only scan and show what can be recovered, without deleting.
+    #[arg(short, long)]
+    pub check: bool,
+
+    /// Optional path to scan (defaults to current directory).
+    #[arg(default_value = ".")]
+    pub path: std::path::PathBuf,
 }
 
-pub fn parse_mode<I>(args: I) -> Result<Mode>
-where
-    I: IntoIterator<Item = String>,
-{
-    let args: Vec<String> = args.into_iter().collect();
-
-    if args.is_empty() {
-        return Ok(Mode::Default);
-    }
-
-    if args.len() == 1 && args[0] == "--check" {
-        return Ok(Mode::Check);
-    }
-
-    eprintln!("Usage: dev-purge [--check]");
-    bail!("invalid arguments")
+pub fn parse() -> Cli {
+    Cli::parse()
 }
