@@ -215,9 +215,6 @@ pub fn matches_any_pattern(
                 false
             }
         };
-        if matched {
-            eprintln!("DEBUG: Matched {} with pattern {}", name_str, p.text);
-        }
         matched
     })
 }
