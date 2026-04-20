@@ -187,32 +187,38 @@ pub fn matches_any_pattern(
         return false;
     };
 
-    patterns.iter().any(|p| match p.kind {
-        PatternKind::Exact => name_str == p.text,
-        PatternKind::Prefix => name_str.starts_with(p.text),
-        PatternKind::Guarded { marker } => {
-            if name_str != p.text {
-                return false;
-            }
-            // Check siblings
-            if let Some(parent) = path.parent() {
-                if let Ok(entries) = std::fs::read_dir(parent) {
-                    for entry in entries.flatten() {
-                        let sibling_name = entry.file_name();
-                        if let Some(s) = sibling_name.to_str() {
-                            if marker.starts_with('.') {
-                                if s.ends_with(marker) {
+    patterns.iter().any(|p| {
+        let matched = match p.kind {
+            PatternKind::Exact => name_str == p.text,
+            PatternKind::Prefix => name_str.starts_with(p.text),
+            PatternKind::Guarded { marker } => {
+                if name_str != p.text {
+                    return false;
+                }
+                // Check siblings
+                if let Some(parent) = path.parent() {
+                    if let Ok(entries) = std::fs::read_dir(parent) {
+                        for entry in entries.flatten() {
+                            let sibling_name = entry.file_name();
+                            if let Some(s) = sibling_name.to_str() {
+                                if marker.starts_with('.') {
+                                    if s.ends_with(marker) {
+                                        return true;
+                                    }
+                                } else if s == marker {
                                     return true;
                                 }
-                            } else if s == marker {
-                                return true;
                             }
                         }
                     }
                 }
+                false
             }
-            false
+        };
+        if matched {
+            eprintln!("DEBUG: Matched {} with pattern {}", name_str, p.text);
         }
+        matched
     })
 }
 
