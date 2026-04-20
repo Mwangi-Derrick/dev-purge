@@ -1,25 +1,25 @@
-use crate::cli::Mode;
 use crate::domain::{config::PurgeConfig, delete, safety, scan, size};
 use crate::types::Finding;
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
-use std::env;
 
 pub fn run() -> Result<()> {
-    let mode = crate::cli::parse_mode(env::args().skip(1))?;
+    let cli = crate::cli::parse();
 
-    let cwd = env::current_dir().context("failed to read current working directory")?;
-    safety::check(&cwd)?;
+    let scan_root = std::fs::canonicalize(&cli.path)
+        .with_context(|| format!("failed to find path: {:?}", cli.path))?;
+
+    safety::check(&scan_root)?;
 
     let config = PurgeConfig::hardcoded();
-    let candidates = scan::scan(&cwd, &config)?;
+    let candidates = scan::scan(&scan_root, &config)?;
 
     let mut findings: Vec<Finding> = size::estimate_sizes(&candidates);
     findings.sort_by(|a, b| b.bytes.cmp(&a.bytes));
 
-    preview::print(&cwd, &findings);
+    preview::print(&scan_root, &findings);
 
-    if mode == Mode::Check || findings.is_empty() {
+    if cli.check || findings.is_empty() {
         return Ok(());
     }
 
