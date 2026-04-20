@@ -32,13 +32,14 @@ fn scan_filter_entry(
     candidates: &RefCell<Vec<PathBuf>>,
 ) -> bool {
     let name = entry.file_name();
+    let path = entry.path();
 
     if is_protected_entry_name(name) {
         return false;
     }
 
-    if entry.file_type().is_dir() && matches_any_pattern(name, patterns) {
-        candidates.borrow_mut().push(entry.path().to_path_buf());
+    if entry.file_type().is_dir() && matches_any_pattern(path, name, patterns) {
+        candidates.borrow_mut().push(path.to_path_buf());
         return false; // don't descend into it
     }
 
