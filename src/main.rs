@@ -48,14 +48,16 @@ fn main() -> Result<()> {
 }
 
 fn parse_mode(args: Vec<String>) -> Result<Mode> {
-    match args.as_slice() {
-        [] => Ok(Mode::Default),
-        ["--check"] => Ok(Mode::Check),
-        _ => {
-            eprintln!("Usage: dev-purge [--check]");
-            bail!("invalid arguments")
-        }
+    if args.is_empty() {
+        return Ok(Mode::Default);
     }
+
+    if args.len() == 1 && args[0] == "--check" {
+        return Ok(Mode::Check);
+    }
+
+    eprintln!("Usage: dev-purge [--check]");
+    bail!("invalid arguments")
 }
 
 fn safety_check(cwd: &Path) -> Result<()> {
