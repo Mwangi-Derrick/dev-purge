@@ -8,14 +8,14 @@ Thanks for considering contributing to **DEV-PURGE**! We're building the modern 
 Found a bug or have a feature request?
 
 - **Check existing issues** first (someone might've already reported it)
-- Open a new [GitHub Issue](https://github.com/yourusername/dev-purge/issues) with:
+- Open a new [GitHub Issue](https://github.com/Mwangi-Derrick/dev-purge/issues) with:
   - Clear title (e.g., "Script crashes on macOS with non-ASCII filenames")
   - Steps to reproduce
   - Your OS and shell (Git Bash, Zsh, Bash, etc.)
   - The output/error message
 
 ### 2. Suggest Features
-Have an idea for a killer feature? Open a [GitHub Discussion](https://github.com/yourusername/dev-purge/discussions) or Issue tagged `enhancement`.
+Have an idea for a killer feature? Open a [GitHub Discussion](https://github.com/Mwangi-Derrick/dev-purge/discussions) or Issue tagged `enhancement`.
 
 **Ideas we're tracking:**
 - Rust rewrite for parallel scanning
