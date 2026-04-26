@@ -235,11 +235,11 @@ fn is_protected_home_subpath(path: &Path) -> bool {
     if cfg!(windows) {
         let local_app_data = env::var_os("LOCALAPPDATA");
         let app_data = env::var_os("APPDATA");
-        let user_profile = env::var_os("USERPROFILE");
+        let user_profile = env::var_os("USERPROFILE").map(PathBuf::from);
 
-        return matches_any_home_subpath(path, &user_profile, &[".cargo", ".config", ".vscode", ".idea", ".cursor"]) 
-            || matches_any_path_prefix(path, local_app_data.as_ref(), &["Local", "LocalLow", "Temp"])
-            || matches_any_path_prefix(path, app_data.as_ref(), &[]);
+        return matches_any_home_subpath(path, &user_profile, &[".cargo", ".config", ".vscode", ".idea", ".cursor"])
+            || matches_any_path_prefix(path, local_app_data.as_ref().map(|v| &**v), &["Local", "LocalLow", "Temp"])
+            || matches_any_path_prefix(path, app_data.as_ref().map(|v| &**v), &[]);
     }
 
     let home = env::var_os("HOME").map(PathBuf::from);
