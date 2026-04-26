@@ -8,8 +8,8 @@ use std::path::Path;
 
 use dev_purge::domain::{
     config::PurgeConfig,
-    impls::{ParallelScanner, OsSafetyChecker, StandardCleaner},
-    traits::{Scanner, SafetyChecker, Cleaner},
+    impls::{OsSafetyChecker, ParallelScanner, StandardCleaner},
+    traits::{Cleaner, SafetyChecker, Scanner},
 };
 
 #[test]
@@ -17,15 +17,32 @@ fn test_parallel_scanner_finds_artifacts() {
     let temp = assert_fs::TempDir::new().unwrap();
 
     // Create some test artifacts
-    temp.child("target").child("debug").create_dir_all().unwrap();
-    temp.child("target").child("debug").child("binary.exe").write_binary(b"fake binary").unwrap();
+    temp.child("target")
+        .child("debug")
+        .create_dir_all()
+        .unwrap();
+    temp.child("target")
+        .child("debug")
+        .child("binary.exe")
+        .write_binary(b"fake binary")
+        .unwrap();
 
-    temp.child("node_modules").child("some-package").create_dir_all().unwrap();
-    temp.child("node_modules").child("some-package").child("index.js").write_binary(b"console.log('test')").unwrap();
+    temp.child("node_modules")
+        .child("some-package")
+        .create_dir_all()
+        .unwrap();
+    temp.child("node_modules")
+        .child("some-package")
+        .child("index.js")
+        .write_binary(b"console.log('test')")
+        .unwrap();
 
     // Create a protected directory that should be ignored
     temp.child(".git").create_dir_all().unwrap();
-    temp.child(".git").child("config").write_binary(b"[core]").unwrap();
+    temp.child(".git")
+        .child("config")
+        .write_binary(b"[core]")
+        .unwrap();
 
     let config = PurgeConfig::hardcoded();
     let scanner = ParallelScanner::new(config);
@@ -34,9 +51,15 @@ fn test_parallel_scanner_finds_artifacts() {
 
     // Should find target/ and node_modules/, but not .git/
     assert!(results.len() >= 2);
-    assert!(results.iter().any(|r| r.path.to_string_lossy().contains("target")));
-    assert!(results.iter().any(|r| r.path.to_string_lossy().contains("node_modules")));
-    assert!(!results.iter().any(|r| r.path.to_string_lossy().contains(".git")));
+    assert!(results
+        .iter()
+        .any(|r| r.path.to_string_lossy().contains("target")));
+    assert!(results
+        .iter()
+        .any(|r| r.path.to_string_lossy().contains("node_modules")));
+    assert!(!results
+        .iter()
+        .any(|r| r.path.to_string_lossy().contains(".git")));
 }
 
 #[test]
@@ -60,8 +83,15 @@ fn test_os_safety_checker() {
 #[test]
 fn test_standard_cleaner_dry_run() {
     let temp = assert_fs::TempDir::new().unwrap();
-    temp.child("target").child("debug").create_dir_all().unwrap();
-    temp.child("target").child("debug").child("binary.exe").write_binary(b"fake binary").unwrap();
+    temp.child("target")
+        .child("debug")
+        .create_dir_all()
+        .unwrap();
+    temp.child("target")
+        .child("debug")
+        .child("binary.exe")
+        .write_binary(b"fake binary")
+        .unwrap();
 
     let config = PurgeConfig::hardcoded();
     let scanner = ParallelScanner::new(config);
@@ -82,8 +112,15 @@ fn test_standard_cleaner_dry_run() {
 #[test]
 fn test_standard_cleaner_actual_deletion() {
     let temp = assert_fs::TempDir::new().unwrap();
-    temp.child("target").child("debug").create_dir_all().unwrap();
-    temp.child("target").child("debug").child("binary.exe").write_binary(b"fake binary").unwrap();
+    temp.child("target")
+        .child("debug")
+        .create_dir_all()
+        .unwrap();
+    temp.child("target")
+        .child("debug")
+        .child("binary.exe")
+        .write_binary(b"fake binary")
+        .unwrap();
 
     let config = PurgeConfig::hardcoded();
     let scanner = ParallelScanner::new(config);

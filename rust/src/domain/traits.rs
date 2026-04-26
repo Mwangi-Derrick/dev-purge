@@ -19,8 +19,8 @@
 //! }
 //! ```
 
-use std::path::{Path, PathBuf};
 use anyhow::Result;
+use std::path::{Path, PathBuf};
 
 /// Result of scanning a single path for potential cleanup.
 #[derive(Debug, Clone)]

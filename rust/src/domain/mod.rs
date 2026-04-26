@@ -1,8 +1,8 @@
 pub mod config;
 pub mod impls;
 pub mod os;
+pub mod patterns;
 pub mod safety;
 pub mod size;
 pub mod traits;
 pub mod types;
-pub mod patterns;

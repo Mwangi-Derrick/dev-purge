@@ -50,56 +50,273 @@ pub struct ProtectedPathRule {
 }
 
 // Compact tuple: (category, os, root_prefix, dir_name, description)
-type ProtectedPathRuleTuple = (ProtectedPathCategory, OsFamily, Option<&'static str>, Option<&'static str>, &'static str);
+type ProtectedPathRuleTuple = (
+    ProtectedPathCategory,
+    OsFamily,
+    Option<&'static str>,
+    Option<&'static str>,
+    &'static str,
+);
 
 const PROTECTED_PATH_RULES: &[ProtectedPathRuleTuple] = &[
     // System-managed roots
-    (ProtectedPathCategory::System, OsFamily::Any, Some("/"), None, "Unix root filesystem"),
-    (ProtectedPathCategory::System, OsFamily::Unix, Some("/usr"), None, "Unix system binaries and libraries"),
-    (ProtectedPathCategory::System, OsFamily::Unix, Some("/etc"), None, "Unix system configuration"),
-    (ProtectedPathCategory::System, OsFamily::Unix, Some("/var"), None, "Unix variable data and caches"),
-    (ProtectedPathCategory::System, OsFamily::Unix, Some("/bin"), None, "Unix system binaries"),
-    (ProtectedPathCategory::System, OsFamily::Unix, Some("/sbin"), None, "Unix system binaries"),
-    (ProtectedPathCategory::System, OsFamily::Unix, Some("/lib"), None, "Unix system libraries"),
-    (ProtectedPathCategory::System, OsFamily::MacOS, Some("/Applications"), None, "macOS application bundles"),
-    (ProtectedPathCategory::System, OsFamily::MacOS, Some("/Library"), None, "macOS system libraries and caches"),
-    (ProtectedPathCategory::System, OsFamily::Windows, Some("c:\\windows"), None, "Windows system directory"),
-    (ProtectedPathCategory::System, OsFamily::Windows, Some("c:\\program files"), None, "Windows program files"),
-    (ProtectedPathCategory::System, OsFamily::Windows, Some("c:\\program files (x86)"), None, "Windows program files x86"),
-
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Any,
+        Some("/"),
+        None,
+        "Unix root filesystem",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Unix,
+        Some("/usr"),
+        None,
+        "Unix system binaries and libraries",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Unix,
+        Some("/etc"),
+        None,
+        "Unix system configuration",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Unix,
+        Some("/var"),
+        None,
+        "Unix variable data and caches",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Unix,
+        Some("/bin"),
+        None,
+        "Unix system binaries",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Unix,
+        Some("/sbin"),
+        None,
+        "Unix system binaries",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Unix,
+        Some("/lib"),
+        None,
+        "Unix system libraries",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::MacOS,
+        Some("/Applications"),
+        None,
+        "macOS application bundles",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::MacOS,
+        Some("/Library"),
+        None,
+        "macOS system libraries and caches",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Windows,
+        Some("c:\\windows"),
+        None,
+        "Windows system directory",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Windows,
+        Some("c:\\program files"),
+        None,
+        "Windows program files",
+    ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Windows,
+        Some("c:\\program files (x86)"),
+        None,
+        "Windows program files x86",
+    ),
     // IDE configurations and caches
-    (ProtectedPathCategory::IdeConfig, OsFamily::Any, None, Some(".vscode"), "VS Code settings and extensions"),
-    (ProtectedPathCategory::IdeConfig, OsFamily::Any, None, Some(".idea"), "JetBrains IDE settings"),
-    (ProtectedPathCategory::IdeConfig, OsFamily::Any, None, Some(".cursor"), "Cursor IDE settings"),
-    (ProtectedPathCategory::IdeConfig, OsFamily::Any, None, Some(".config"), "User application configuration"),
-    (ProtectedPathCategory::IdeConfig, OsFamily::Unix, None, Some(".cache"), "User cache directory (Linux)"),
-    (ProtectedPathCategory::IdeConfig, OsFamily::MacOS, None, Some("Library"), "macOS user library"),
-    (ProtectedPathCategory::IdeConfig, OsFamily::Windows, None, Some("AppData"), "Windows app data"),
-
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::Any,
+        None,
+        Some(".vscode"),
+        "VS Code settings and extensions",
+    ),
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::Any,
+        None,
+        Some(".idea"),
+        "JetBrains IDE settings",
+    ),
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::Any,
+        None,
+        Some(".cursor"),
+        "Cursor IDE settings",
+    ),
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::Any,
+        None,
+        Some(".config"),
+        "User application configuration",
+    ),
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::Unix,
+        None,
+        Some(".cache"),
+        "User cache directory (Linux)",
+    ),
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::MacOS,
+        None,
+        Some("Library"),
+        "macOS user library",
+    ),
+    (
+        ProtectedPathCategory::IdeConfig,
+        OsFamily::Windows,
+        None,
+        Some("AppData"),
+        "Windows app data",
+    ),
     // Project metadata
-    (ProtectedPathCategory::ProjectMetadata, OsFamily::Any, None, Some(".git"), "Git repository metadata"),
-    (ProtectedPathCategory::ProjectMetadata, OsFamily::Any, None, Some(".github"), "GitHub workflow metadata"),
-    (ProtectedPathCategory::ProjectMetadata, OsFamily::Any, None, Some(".gitignore"), "Git ignore file"),
-    (ProtectedPathCategory::ProjectMetadata, OsFamily::Any, None, Some(".editorconfig"), "Editor configuration"),
-
+    (
+        ProtectedPathCategory::ProjectMetadata,
+        OsFamily::Any,
+        None,
+        Some(".git"),
+        "Git repository metadata",
+    ),
+    (
+        ProtectedPathCategory::ProjectMetadata,
+        OsFamily::Any,
+        None,
+        Some(".github"),
+        "GitHub workflow metadata",
+    ),
+    (
+        ProtectedPathCategory::ProjectMetadata,
+        OsFamily::Any,
+        None,
+        Some(".gitignore"),
+        "Git ignore file",
+    ),
+    (
+        ProtectedPathCategory::ProjectMetadata,
+        OsFamily::Any,
+        None,
+        Some(".editorconfig"),
+        "Editor configuration",
+    ),
     // Secret configurations
-    (ProtectedPathCategory::SecretConfig, OsFamily::Any, None, Some(".env"), "Environment variables and secrets"),
-    (ProtectedPathCategory::SecretConfig, OsFamily::Any, None, Some(".env.local"), "Local environment variables"),
-    (ProtectedPathCategory::SecretConfig, OsFamily::Any, None, Some(".env.production"), "Production secrets"),
-
+    (
+        ProtectedPathCategory::SecretConfig,
+        OsFamily::Any,
+        None,
+        Some(".env"),
+        "Environment variables and secrets",
+    ),
+    (
+        ProtectedPathCategory::SecretConfig,
+        OsFamily::Any,
+        None,
+        Some(".env.local"),
+        "Local environment variables",
+    ),
+    (
+        ProtectedPathCategory::SecretConfig,
+        OsFamily::Any,
+        None,
+        Some(".env.production"),
+        "Production secrets",
+    ),
     // Tool binaries and configurations
-    (ProtectedPathCategory::ToolBinary, OsFamily::Any, None, Some(".cargo"), "Cargo configuration and binaries"),
-    (ProtectedPathCategory::ToolBinary, OsFamily::Any, None, Some(".npm-global"), "Global npm binaries"),
-    (ProtectedPathCategory::ToolBinary, OsFamily::Any, None, Some(".local"), "Local user binaries"),
-    (ProtectedPathCategory::ToolBinary, OsFamily::Any, None, Some("go"), "Go installation directory"),
-    (ProtectedPathCategory::ToolBinary, OsFamily::Any, None, Some(".gradle"), "Gradle configuration"),
-    (ProtectedPathCategory::ToolBinary, OsFamily::Any, None, Some(".m2"), "Maven repository"),
-
+    (
+        ProtectedPathCategory::ToolBinary,
+        OsFamily::Any,
+        None,
+        Some(".cargo"),
+        "Cargo configuration and binaries",
+    ),
+    (
+        ProtectedPathCategory::ToolBinary,
+        OsFamily::Any,
+        None,
+        Some(".npm-global"),
+        "Global npm binaries",
+    ),
+    (
+        ProtectedPathCategory::ToolBinary,
+        OsFamily::Any,
+        None,
+        Some(".local"),
+        "Local user binaries",
+    ),
+    (
+        ProtectedPathCategory::ToolBinary,
+        OsFamily::Any,
+        None,
+        Some("go"),
+        "Go installation directory",
+    ),
+    (
+        ProtectedPathCategory::ToolBinary,
+        OsFamily::Any,
+        None,
+        Some(".gradle"),
+        "Gradle configuration",
+    ),
+    (
+        ProtectedPathCategory::ToolBinary,
+        OsFamily::Any,
+        None,
+        Some(".m2"),
+        "Maven repository",
+    ),
     // Tool caches (safe to protect to avoid accidental deletion)
-    (ProtectedPathCategory::ToolCache, OsFamily::Any, None, Some(".cargo"), "Cargo registry cache"),
-    (ProtectedPathCategory::ToolCache, OsFamily::Any, None, Some(".npm"), "npm cache"),
-    (ProtectedPathCategory::ToolCache, OsFamily::Any, None, Some(".gradle"), "Gradle caches"),
-    (ProtectedPathCategory::ToolCache, OsFamily::Any, None, Some(".m2"), "Maven local repository"),
+    (
+        ProtectedPathCategory::ToolCache,
+        OsFamily::Any,
+        None,
+        Some(".cargo"),
+        "Cargo registry cache",
+    ),
+    (
+        ProtectedPathCategory::ToolCache,
+        OsFamily::Any,
+        None,
+        Some(".npm"),
+        "npm cache",
+    ),
+    (
+        ProtectedPathCategory::ToolCache,
+        OsFamily::Any,
+        None,
+        Some(".gradle"),
+        "Gradle caches",
+    ),
+    (
+        ProtectedPathCategory::ToolCache,
+        OsFamily::Any,
+        None,
+        Some(".m2"),
+        "Maven local repository",
+    ),
 ];
 
 pub fn is_protected_entry_name(name: &OsStr) -> bool {
@@ -117,18 +334,21 @@ pub fn is_protected_entry_name(name: &OsStr) -> bool {
 
 pub fn is_protected_root(path: &Path) -> bool {
     let normalized = normalize_path(path);
-    PROTECTED_PATH_RULES.iter().any(|(_category, os, root_prefix, _dir_name, _description)| {
-        if !matches_os_family(*os) {
-            return false;
-        }
+    PROTECTED_PATH_RULES
+        .iter()
+        .any(|(_category, os, root_prefix, _dir_name, _description)| {
+            if !matches_os_family(*os) {
+                return false;
+            }
 
-        if let Some(prefix) = root_prefix {
-            normalized == *prefix
-                || normalized.starts_with(&format!("{}{}", prefix, std::path::MAIN_SEPARATOR))
-        } else {
-            false
-        }
-    }) || is_protected_home_subpath(path)
+            if let Some(prefix) = root_prefix {
+                normalized == *prefix
+                    || normalized.starts_with(&format!("{}{}", prefix, std::path::MAIN_SEPARATOR))
+            } else {
+                false
+            }
+        })
+        || is_protected_home_subpath(path)
 }
 
 fn matches_os_family(rule_os: OsFamily) -> bool {

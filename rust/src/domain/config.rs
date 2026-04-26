@@ -30,6 +30,3 @@ impl PurgeConfig {
 pub fn matches_any_pattern(path: &Path, name: &OsStr, patterns: &[Pattern]) -> bool {
     crate::domain::patterns::matches_any_pattern(path, name, patterns)
 }
-
-
-   

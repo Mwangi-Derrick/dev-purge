@@ -20,15 +20,15 @@
 //! }
 //! ```
 
-use std::path::Path;
-use std::sync::Mutex;
 use anyhow::Result;
 use rayon::prelude::*;
+use std::path::Path;
+use std::sync::Mutex;
 use walkdir::WalkDir;
 
 use super::config::{matches_any_pattern, PurgeConfig};
 use super::os;
-use super::traits::{Scanner, SafetyChecker, Cleaner, ScanResult, CleanupStats, CleanupCategory};
+use super::traits::{Cleaner, CleanupCategory, CleanupStats, SafetyChecker, ScanResult, Scanner};
 
 /// Default scanner using walkdir and rayon for parallel processing.
 pub struct ParallelScanner {
@@ -54,7 +54,9 @@ impl Scanner for ParallelScanner {
                 let entry = entry?;
                 let path = entry.path();
 
-                if entry.file_type().is_dir() && matches_any_pattern(path, entry.file_name(), patterns) {
+                if entry.file_type().is_dir()
+                    && matches_any_pattern(path, entry.file_name(), patterns)
+                {
                     if let Ok(_metadata) = entry.metadata() {
                         let size = estimate_dir_size(path)?;
                         let result = ScanResult {
@@ -79,9 +81,12 @@ pub struct OsSafetyChecker;
 
 impl SafetyChecker for OsSafetyChecker {
     fn is_safe(&self, path: &Path) -> bool {
-        !os::is_protected_root(path) && !path.components().any(|comp| {
-            comp.as_os_str().to_str().is_some_and(|s| os::is_protected_entry_name(s.as_ref()))
-        })
+        !os::is_protected_root(path)
+            && !path.components().any(|comp| {
+                comp.as_os_str()
+                    .to_str()
+                    .is_some_and(|s| os::is_protected_entry_name(s.as_ref()))
+            })
     }
 }
 
@@ -98,13 +103,21 @@ impl Cleaner for StandardCleaner {
 
         for result in results {
             if dry_run {
-                println!("[DRY RUN] Would delete: {} ({} bytes)", result.path.display(), result.size_bytes);
+                println!(
+                    "[DRY RUN] Would delete: {} ({} bytes)",
+                    result.path.display(),
+                    result.size_bytes
+                );
                 stats.total_bytes_freed += result.size_bytes;
                 stats.items_deleted += 1;
             } else {
                 match std::fs::remove_dir_all(&result.path) {
                     Ok(_) => {
-                        println!("✓ Deleted: {} ({} bytes)", result.path.display(), result.size_bytes);
+                        println!(
+                            "✓ Deleted: {} ({} bytes)",
+                            result.path.display(),
+                            result.size_bytes
+                        );
                         stats.total_bytes_freed += result.size_bytes;
                         stats.items_deleted += 1;
                     }

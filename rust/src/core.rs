@@ -1,4 +1,9 @@
-use crate::domain::{config::PurgeConfig, impls::{ParallelScanner, OsSafetyChecker, StandardCleaner}, safety, traits::{Scanner, SafetyChecker, Cleaner}};
+use crate::domain::{
+    config::PurgeConfig,
+    impls::{OsSafetyChecker, ParallelScanner, StandardCleaner},
+    safety,
+    traits::{Cleaner, SafetyChecker, Scanner},
+};
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
 
@@ -20,17 +25,19 @@ pub fn run() -> Result<()> {
     let scan_results = scanner.scan(&scan_root)?;
 
     // Filter safe results
-    let safe_results: Vec<_> = scan_results.into_iter()
+    let safe_results: Vec<_> = scan_results
+        .into_iter()
         .filter(|result| safety_checker.is_safe(&result.path))
         .collect();
 
     // Convert to UI format (temporary compatibility)
-    let findings: Vec<_> = safe_results.iter().map(|r| {
-        crate::domain::types::Finding {
+    let findings: Vec<_> = safe_results
+        .iter()
+        .map(|r| crate::domain::types::Finding {
             path: r.path.clone(),
             bytes: r.size_bytes,
-        }
-    }).collect();
+        })
+        .collect();
 
     preview::print(&scan_root, &findings);
 
