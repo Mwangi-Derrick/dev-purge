@@ -1,4 +1,4 @@
-use crate::domain::{config::PurgeConfig, delete, safety, scan, size, types::Finding};
+use crate::domain::{config::PurgeConfig, impls::{ParallelScanner, OsSafetyChecker, StandardCleaner}, safety, traits::ScanResult, types::Finding};
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
 
@@ -10,11 +10,27 @@ pub fn run() -> Result<()> {
 
     safety::check(&scan_root)?;
 
+    // Compose the default pipeline using traits
     let config = PurgeConfig::hardcoded();
-    let candidates = scan::scan(&scan_root, &config)?;
+    let scanner = ParallelScanner::new(config);
+    let safety_checker = OsSafetyChecker;
+    let cleaner = StandardCleaner;
 
-    let mut findings: Vec<Finding> = size::estimate_sizes(&candidates);
-    findings.sort_by(|a, b| b.bytes.cmp(&a.bytes));
+    // Scan for candidates
+    let scan_results = scanner.scan(&scan_root)?;
+
+    // Filter safe results
+    let safe_results: Vec<_> = scan_results.into_iter()
+        .filter(|result| safety_checker.is_safe(&result.path))
+        .collect();
+
+    // Convert to UI format (temporary compatibility)
+    let findings: Vec<_> = safe_results.iter().map(|r| {
+        crate::domain::types::Finding {
+            path: r.path.clone(),
+            bytes: r.size_bytes,
+        }
+    }).collect();
 
     preview::print(&scan_root, &findings);
 
@@ -26,8 +42,9 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
-    let stats = delete::delete(&findings);
-    preview::print_summary(stats.recovered_bytes, stats.errors);
+    // Clean up
+    let stats = cleaner.clean(&safe_results, false)?;
+    preview::print_summary(stats.total_bytes_freed, stats.errors.len());
 
     Ok(())
 }
