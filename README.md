@@ -166,6 +166,23 @@ dev-purge --help
 
 ---
 
+## 🌐 Rust + Zig: Two versions, one safe cleanup experience
+
+The repo contains both a Rust flagship and a compact Zig CLI:
+
+- `rust/` is the feature-rich version with robust scanning, safety checks, and user-friendly output.
+- `zig/` is designed for tiny downloads and fast cross-platform releases.
+
+Why Zig matters for dev-purge:
+
+- Zig binaries are much smaller than Rust's static std binaries.
+- Zig cross-compilation is simple and works without extra toolchains.
+- Zig is ideal for a lightweight installer on slow connections.
+
+If you want the best of both worlds, the Rust version is the rich CLI and the Zig version is the fast-download release.
+
+---
+
 ## 🚨 Real-World Example: The 30GB Win
 
 ```bash
