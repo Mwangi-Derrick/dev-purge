@@ -144,32 +144,18 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/rust-v')
 
     steps:
-    - name: Download Rust artifacts
+    - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
         path: artifacts/
-        pattern: dev-purge-linux-*
-        merge-multiple: false
-
-    - name: Download Windows artifact
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts/
-        pattern: dev-purge-windows-*
-        merge-multiple: false
-
-    - name: Download MacOS artifact
-      uses: actions/download-artifact@v4
-      with:
-        path: artifacts/
-        pattern: dev-purge-macos-*
         merge-multiple: false
 
     - name: Create archives
       run: |
         cd artifacts
         for dir in */; do
-          if [ -d "$dir" ]; then
+          # Only process directories that start with dev-purge- and DON'T start with dev-purge-scout-
+          if [[ -d "$dir" && "$dir" == dev-purge-* && "$dir" != dev-purge-scout-* ]]; then
             cd "$dir"
             BINARY=$(ls)
             tar -czf "../${dir%/}.tar.gz" "$BINARY"
@@ -194,18 +180,18 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/zig-v')
 
     steps:
-    - name: Download Zig artifacts
+    - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
         path: artifacts/
-        pattern: dev-purge-scout-*
         merge-multiple: false
 
     - name: Create archives
       run: |
         cd artifacts
         for dir in */; do
-          if [ -d "$dir" ]; then
+          # Only process directories that start with dev-purge-scout-
+          if [[ -d "$dir" && "$dir" == dev-purge-scout-* ]]; then
             cd "$dir"
             BINARY=$(ls)
             tar -czf "../${dir%/}.tar.gz" "$BINARY"
