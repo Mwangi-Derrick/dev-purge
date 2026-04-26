@@ -1,4 +1,5 @@
-use crate::domain::config::{is_protected_entry_name, matches_any_pattern, Pattern, PurgeConfig};
+use crate::domain::config::{matches_any_pattern, Pattern, PurgeConfig};
+use crate::domain::os;
 use anyhow::Result;
 use colored::Colorize;
 use std::cell::RefCell;
@@ -34,7 +35,7 @@ fn scan_filter_entry(
     let name = entry.file_name();
     let path = entry.path();
 
-    if is_protected_entry_name(name) {
+    if os::is_protected_entry_name(name) {
         return false;
     }
 
