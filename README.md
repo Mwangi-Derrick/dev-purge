@@ -6,7 +6,7 @@
 
 ## 🚀 The Problem
 
-(**Rust 🦀**  · **Go 🐹**  · **Node.js  📦** . **Python 🐍** · **Docker 🐳**), **Java **, **Swift**, **.NET**, **Elixir**, and more—your SSD is silently **hemorrhaging space**.
+If you are a multi-stack developer juggling (**Rust 🦀**· **Go 🐹**  · **Node.js  📦** . **Python 🐍** · **Docker 🐳**), **Java **, **Swift**, **.NET**, **Elixir**, and more—your SSD is silently **hemorrhaging space**.
 
 ### Where the 30GB is hiding:
 
