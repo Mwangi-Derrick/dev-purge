@@ -1,5 +1,4 @@
-use crate::domain::{config::PurgeConfig, delete, safety, scan, size};
-use crate::types::Finding;
+use crate::domain::{config::PurgeConfig, delete, safety, scan, size, types::Finding};
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
 
