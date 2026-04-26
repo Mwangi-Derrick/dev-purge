@@ -192,9 +192,9 @@ pub fn is_protected_entry_name(name: &OsStr) -> bool {
         None => return false,
     };
 
-    PROTECTED_PATH_RULES.iter().any(|rule| {
-        rule.dir_name == Some(name) && matches_os_family(rule.os)
-    })
+    PROTECTED_PATH_RULES
+        .iter()
+        .any(|rule| rule.dir_name == Some(name) && matches_os_family(rule.os))
 }
 
 pub fn is_protected_root(path: &Path) -> bool {
@@ -205,7 +205,8 @@ pub fn is_protected_root(path: &Path) -> bool {
         }
 
         if let Some(prefix) = rule.root_prefix {
-            normalized == prefix || normalized.starts_with(&format!("{}{}", prefix, std::path::MAIN_SEPARATOR))
+            normalized == prefix
+                || normalized.starts_with(&format!("{}{}", prefix, std::path::MAIN_SEPARATOR))
         } else {
             false
         }
@@ -237,17 +238,29 @@ fn is_protected_home_subpath(path: &Path) -> bool {
         let app_data = env::var_os("APPDATA");
         let user_profile = env::var_os("USERPROFILE").map(PathBuf::from);
 
-        return matches_any_home_subpath(path, &user_profile, &[".cargo", ".config", ".vscode", ".idea", ".cursor"])
-            || matches_any_path_prefix(path, local_app_data.as_ref().map(|v| &**v), &["Local", "LocalLow", "Temp"])
-            || matches_any_path_prefix(path, app_data.as_ref().map(|v| &**v), &[]);
+        return matches_any_home_subpath(
+            path,
+            &user_profile,
+            &[".cargo", ".config", ".vscode", ".idea", ".cursor"],
+        ) || matches_any_path_prefix(
+            path,
+            local_app_data.as_ref().map(|v| &**v),
+            &["Local", "LocalLow", "Temp"],
+        ) || matches_any_path_prefix(path, app_data.as_ref().map(|v| &**v), &[]);
     }
 
     let home = env::var_os("HOME").map(PathBuf::from);
-    matches_any_home_subpath(path, &home, &[".cargo", ".config", ".local", ".vscode", ".idea", ".cursor"])
+    matches_any_home_subpath(
+        path,
+        &home,
+        &[".cargo", ".config", ".local", ".vscode", ".idea", ".cursor"],
+    )
 }
 
 fn matches_any_home_subpath(path: &Path, home: &Option<PathBuf>, subdirs: &[&str]) -> bool {
-    let Some(home) = home else { return false; };
+    let Some(home) = home else {
+        return false;
+    };
 
     for subdir in subdirs {
         let candidate = home.join(subdir);
@@ -260,7 +273,9 @@ fn matches_any_home_subpath(path: &Path, home: &Option<PathBuf>, subdirs: &[&str
 }
 
 fn matches_any_path_prefix(path: &Path, prefix: Option<&OsStr>, _subdirs: &[&str]) -> bool {
-    let Some(prefix) = prefix else { return false; };
+    let Some(prefix) = prefix else {
+        return false;
+    };
     let prefix_path = PathBuf::from(prefix);
     path == prefix_path || path.starts_with(&prefix_path)
 }
