@@ -6,7 +6,7 @@
 
 ## 🚀 The Problem
 
-If you're a multi-stack developer (Rust 🦀 · Go 🐹 · Node.js 📦 . Python 🐍 · Docker 🐳), your SSD is silently **hemorrhaging space**.
+(**Rust 🦀**  · **Go 🐹**  · **Node.js  📦** . **Python 🐍** · **Docker 🐳**), **Java **, **Swift**, **.NET**, **Elixir**, and more—your SSD is silently **hemorrhaging space**.
 
 ### Where the 30GB is hiding:
 
@@ -15,8 +15,10 @@ If you're a multi-stack developer (Rust 🦀 · Go 🐹 · Node.js 📦 . Python
 | **Rust `target/` folders** | 15–20 GB | Every `cargo build` creates a fresh build artifact directory per project |
 | **Node `node_modules`** | 5–8 GB | Heavy dependencies (especially Next.js/React stacks) multiply across projects |
 | **Go module cache** | 2–3 GB | Global `$GOMODCACHE` stores every version of every dependency ever pulled |
+| **Python `__pycache__` and `.venv/`** | 2–4 GB | Virtual environments and bytecode accumulate silently across 10+ projects |
+| **Java/Gradle/Maven build dirs** | 3–5 GB | `target/`, `build/`, `.gradle` cache never cleaned up |
+| **.NET `bin/obj` folders** | 2–3 GB | Every `dotnet build` leaves artifacts behind |
 | **Docker layers** | 2–5 GB | Old images, dangling layers, container logs that never rotated |
-| **Python `__pycache__` and `.venv/`** | 1–3 GB | Virtual environments and bytecode accumulate silently |
 
 **The killer?** None of this is obvious. Your IDE keeps running. Your builds work. Then one morning: **0MB free**. 💀
 
@@ -24,59 +26,69 @@ If you're a multi-stack developer (Rust 🦀 · Go 🐹 · Node.js 📦 . Python
 
 ## ✨ The Solution
 
-**DEV-PURGE** is a **fortified, intelligent cleanup script** that:
+**DEV-PURGE** is a **modern, fortified and engineered cleanup tool** available in two flavors:
 
-✅ **Recovers 20–40GB** from dev caches in seconds  
-✅ **Protects your IDEs** (.vscode, .idea, extensions)  
-✅ **Safeguards project files** (.git, .env, config)  
-✅ **Blocks dangerous system directories** (refuses to run in `/`, `/usr`, `Program Files`)  
-✅ **Includes dry-run mode** to preview deletions safely  
-✅ **Color-coded output** so you know exactly what's being cleaned  
+### Rust Version (Feature-Rich)
+✅ **Parallel scanning** with Rayon for blazing speed  
+✅ **Trait-based architecture** for extensibility (easy contributor model)  
+✅ **Comprehensive safety** with OS-aware path protection  
+✅ **30+ build tool patterns** across 15+ programming languages  
+✅ **Color-coded output** with real-time progress  
+✅ **Dry-run mode** to preview before deleting  
+
+### Zig Version (Lightweight)
+⚡ **Tiny binary** (~5MB vs 10MB+ Rust)  
+⚡ **Fast cross-compilation** for all platforms  
+⚡ **Feature parity** with Rust version  
+⚡ **No runtime overhead** (same safety & patterns)  
 
 ---
 
-## 🔧 Installation
+## 📥 Installation
 
-### Linux / macOS / Git Bash (Windows)
-
-**Option 1: Global Command (Recommended)**
+### Rust Version (Recommended for Development)
 
 ```bash
-# Clone the repo
+# Clone and build
 git clone https://github.com/Mwangi-Derrick/dev-purge.git
-cd dev-purge
+cd dev-purge/rust
 
-# Run the install script
-chmod +x install.sh
-./install.sh
+# Install globally
+cargo install --path .
+
+# Or run directly
+cargo run --release -- --help
 ```
 
-The installer will:
-- Copy `dev-purge.sh` to `~/.local/bin/dev-purge` (or `/usr/local/bin/` if on Linux)
-- Make it executable globally
-- Add a helpful alias to your `.bashrc`
-
-**Option 2: Direct Usage**
+### Zig Version (Lightweight Alternative)
 
 ```bash
-# Make executable
-chmod +x dev-purge.sh
+cd dev-purge/zig
 
-# Run from your projects directory
-./dev-purge.sh
+# Build
+zig build -Doptimize=ReleaseFast
+
+# Or run directly
+zig run src/main.zig -- --help
 ```
+
+### Pre-Built Binaries
+
+Download from [GitHub Releases](https://github.com/Mwangi-Derrick/dev-purge/releases):
+- `dev-purge-linux-x64` - Linux x86_64
+- `dev-purge-windows-x64.exe` - Windows
+- `dev-purge-macos-x64` - macOS Intel
+- `dev-purge-linux-arm64` - Linux ARM64
 
 ---
 
 ## 🎯 Quick Start
 
-### Run a Dry-Run First (Safe!)
-
-Always preview before you delete:
+### Preview What Will Be Deleted
 
 ```bash
 cd ~/your/projects
-dev-purge --dry-run
+dev-purge . --dry-run
 ```
 
 **Output:**
