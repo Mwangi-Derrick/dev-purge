@@ -45,12 +45,12 @@ pub fn run() -> Result<()> {
         return Ok(());
     }
 
-    if !confirm::prompt(preview::total_bytes(&findings), findings.len())? {
+    if !cli.yes && !confirm::prompt(preview::total_bytes(&findings), findings.len())? {
         return Ok(());
     }
 
     // Clean up
-    let stats = cleaner.clean(&safe_results, false)?;
+    let stats = cleaner.clean(&safe_results, false, cli.permanent)?;
     preview::print_summary(stats.total_bytes_freed, stats.errors.len() as u64);
 
     Ok(())
