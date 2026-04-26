@@ -5,13 +5,13 @@ pub fn build(b: *std.Build) void {
     const optimize = b.standardOptimizeOption(.{});
 
     const exe = b.addExecutable(.{
-        .name = "dev-purge-zig",
+        .name = "dev-purge",
+        .root_module = b.createModule(.{
+            .root_source_file = b.path("src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        }),
     });
-
-    exe.addCSourceFile(.{ .file = b.path("src/main.zig"), .flags = &.{} });
-    exe.linkLibC();
-    exe.setTarget(target);
-    exe.setBuildMode(optimize);
 
     b.installArtifact(exe);
 
