@@ -17,6 +17,11 @@ pub fn main() !void {
         return;
     }
 
+    if (std.mem.eql(u8, args[1], "--version") or std.mem.eql(u8, args[1], "-v")) {
+        std.debug.print("dev-purge scout v0.1.0 (Zig 0.15.2)\n", .{});
+        return;
+    }
+
     const root_path = args[1];
     const dry_run = hasArg(args, "--dry-run");
 
