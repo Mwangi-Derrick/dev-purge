@@ -24,7 +24,8 @@ pub fn scan(dir: std.fs.Dir, path: []const u8, allocator: std.mem.Allocator, res
 
         if (config.matchesPattern(iterable_dir, name)) {
             const size = try estimateDirSize(iterable_dir, name, allocator);
-            try results.append(.{ .path = full_path, .size = size });
+            // Add allocator as first parameter to append
+            try results.append(allocator, .{ .path = full_path, .size = size });
             // Do NOT recurse into matched artifacts
         } else {
             // Recurse into unknown directories
