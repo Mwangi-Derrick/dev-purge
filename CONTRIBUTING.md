@@ -29,7 +29,7 @@ Have an idea for a killer feature? Open a [GitHub Discussion](https://github.com
 
 #### Step 1: Fork & Clone
 ```bash
-git clone https://github.com/yourusername/dev-purge.git
+git clone https://github.com/Mwangi-Derrick/dev-purge.git
 cd dev-purge
 ```
 
