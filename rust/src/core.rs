@@ -22,12 +22,24 @@ pub fn run() -> Result<()> {
     let cleaner = StandardCleaner;
 
     // Scan for candidates
-    let scan_results = scanner.scan(&scan_root)?;
+    let mut scan_results = scanner.scan(&scan_root)?;
 
-    // Filter safe results
+    // Add Docker scan
+    let docker_scanner = crate::domain::docker::DockerScanner;
+    if let Ok(docker_results) = docker_scanner.scan(&scan_root) {
+        scan_results.extend(docker_results);
+    }
+
+    // Filter safe results (Docker results are inherently safe as they use the API)
     let safe_results: Vec<_> = scan_results
         .into_iter()
-        .filter(|result| safety_checker.is_safe(&result.path))
+        .filter(|result| {
+            if result.artifact_type == crate::domain::traits::ArtifactType::Physical {
+                safety_checker.is_safe(&result.path)
+            } else {
+                true
+            }
+        })
         .collect();
 
     // Convert to UI format (temporary compatibility)
