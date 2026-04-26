@@ -90,11 +90,51 @@ jobs:
         name: ${{ matrix.name }}
         path: rust/target/${{ matrix.target }}/release/dev-purge${{ contains(matrix.name, '.exe') && '.exe' || '' }}
 
+
+  zig-build:
+    name: Build Zig Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-linux
+            name: dev-purge-scout-linux-x64
+          - os: ubuntu-latest
+            target: aarch64-linux
+            name: dev-purge-scout-linux-arm64
+          - os: windows-latest
+            target: x86_64-windows
+            name: dev-purge-scout-windows-x64.exe
+          - os: macos-latest
+            target: x86_64-macos
+            name: dev-purge-scout-macos-x64
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Zig
+      uses: goto-bus-stop/setup-zig@v2
+      with:
+        version: 0.15.2
+
+    - name: Build Zig release
+      run: |
+        cd zig
+        zig build -Doptimize=ReleaseSafe -Dtarget=${{ matrix.target }}
+
+    - name: Upload Zig artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.name }}
+        path: zig/zig-out/bin/dev-purge${{ contains(matrix.name, '.exe') && '.exe' || '' }}
+
   release:
     name: Create Release
-    needs: [test, build-release]
+    needs: [test, build-release, zig-build]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
     - name: Download all artifacts
@@ -107,7 +147,11 @@ jobs:
         cd artifacts
         for dir in */; do
           if [ -d "$dir" ]; then
-            tar -czf "${dir%/}.tar.gz" -C "$dir" .
+            cd "$dir"
+            # Extract the actual binary and zip/tar it
+            BINARY=$(ls)
+            tar -czf "../${dir%/}.tar.gz" "$BINARY"
+            cd ..
           fi
         done
         ls -la
@@ -116,24 +160,7 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         files: artifacts/*.tar.gz
+        draft: false
+        prerelease: false
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  zig-test:
-    name: Test Zig Version
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-
-    - name: Install Zig
-      uses: goto-bus-stop/setup-zig@v2
-      with:
-        version: 0.15.2
-
-    - name: Test Zig version
-      run: |
-        cd zig
-        zig run src/main.zig -- . --dry-run
-        zig run src/main.zig -- --help
