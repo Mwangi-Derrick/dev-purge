@@ -74,7 +74,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.name }}
-        path: target/${{ matrix.target }}/release/dev-purge${{ contains(matrix.name, '.exe') && '.exe' || '' }}
+        path: rust/target/${{ matrix.target }}/release/dev-purge${{ contains(matrix.name, '.exe') && '.exe' || '' }}
 
   release:
     name: Create Release
