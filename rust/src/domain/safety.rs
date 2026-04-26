@@ -25,6 +25,15 @@ pub fn check(cwd: &Path) -> Result<()> {
         bail!("refusing to run from system directory");
     }
 
+    if contains_protected_path(&cwd) {
+        eprintln!(
+            "{}  Refusing to run from a directory containing protected paths: {}",
+            "✗".red(),
+            display_path_for_humans(&cwd).dimmed()
+        );
+        bail!("refusing to run from protected directory");
+    }
+
     Ok(())
 }
 
@@ -62,6 +71,34 @@ fn is_system_dir(cwd: &Path) -> bool {
             || s.starts_with("/var")
             || s.starts_with("/bin");
     }
+}
+
+fn contains_protected_path(cwd: &Path) -> bool {
+    let components: Vec<String> = cwd
+        .components()
+        .filter_map(|c| c.as_os_str().to_str().map(|s| s.to_string()))
+        .collect();
+
+    let protected = [
+        // System (OS managed)
+        "bin", "sbin", "usr", "etc", "var", "lib",
+        // Windows specific
+        "Windows", "Program Files", "Program Files (x86)",
+        // IDE configs
+        ".vscode", ".idea", ".cursor", ".config",
+        // Tool binaries
+        ".cargo", ".npm-global", "go",
+        // Windows
+        "AppData",
+    ];
+
+    for comp in &components {
+        if protected.contains(&comp.as_str()) {
+            return true;
+        }
+    }
+
+    false
 }
 
 fn paths_equal_case_insensitive_if_windows(a: &Path, b: &Path) -> bool {
