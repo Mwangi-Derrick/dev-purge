@@ -134,6 +134,8 @@ jobs:
     name: Create Release
     needs: [test, build-release, zig-build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: github.event_name == 'release' || startsWith(github.ref, 'refs/tags/v')
 
     steps:
@@ -162,5 +164,6 @@ jobs:
         files: artifacts/*.tar.gz
         draft: false
         prerelease: false
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
