@@ -1,219 +1,164 @@
-# Contributing to DEV-PURGE
+# Contributing to DEV-PURGE 🔥
 
-Thanks for considering contributing to **DEV-PURGE**! We're building the modern solution to developer disk bloat, and your help makes it better.
+Yo. You found the project. You liked it enough to contribute. Respect.
 
-## 🎯 How to Contribute
+`dev-purge` is a **safety-first, high-speed** developer workspace cleanup tool—dual-engine, zero-compromise. We delete build artifacts for a living, and we're really good at it.
 
-### 1. Report Issues
-Found a bug or have a feature request?
+Pull up a chair. Let's make this thing better together.
 
-- **Check existing issues** first (someone might've already reported it)
-- Open a new [GitHub Issue](https://github.com/Mwangi-Derrick/dev-purge/issues) with:
-  - Clear title (e.g., "Script crashes on macOS with non-ASCII filenames")
-  - Steps to reproduce
-  - Your OS and shell (Git Bash, Zsh, Bash, etc.)
-  - The output/error message
+---
 
-### 2. Suggest Features
-Have an idea for a killer feature? Open a [GitHub Discussion](https://github.com/Mwangi-Derrick/dev-purge/discussions) or Issue tagged `enhancement`.
+## 🏗️ How This Thing Is Built
 
-**Ideas we're tracking:**
-- Rust rewrite for parallel scanning
-- Configuration file support (`.purgeignore`)
-- Size reporting (show exactly how much each folder saved)
-- Watch mode (auto-clean when disk < 10% free)
-- Docker-specific cleanup modes
-- Integration with CI/CD pipelines
+Two engines. One mission.
 
-### 3. Submit a Pull Request
+| Engine | Location | Why It Exists |
+|--------|----------|---------------|
+| 🦀 **Rust** | `/rust` | Parallel scanning, rich CLI, production-grade |
+| ⚡ **Zig** | `/zig` | Tiny binary, zero deps, blazing distribution |
 
-#### Step 1: Fork & Clone
+Both share the same **domain logic and safety heuristics**. If you touch one, you touch both. Symmetry is non-negotiable.
+
+---
+
+## 🎯 What You Can Contribute
+
+### ➕ Add a New Language or Tool
+
+Know a build folder that should be nuked? Add it to the **Compact Registry**.
+
+- 🦀 Rust: `rust/src/domain/patterns.rs` → `ARTIFACT_REGISTRY`
+- ⚡ Zig: `zig/src/domain/config.zig` → `ARTIFACT_REGISTRY`
+
+Three pattern types available:
+
+| Type | What It Does | Example |
+|------|-------------|---------|
+| `Exact` | Matches a dir name exactly | `target` |
+| `Prefix` | Matches names that start with a string | `cmake-build-` → matches `cmake-build-debug`, `cmake-build-release` |
+| `Guarded` | Only matches if a sibling file/extension exists | `bin/` only if `.csproj` exists → won't kill random `bin` folders |
+
+> 💡 **Don't guess.** Verify the pattern against real projects before submitting.
+> A match that's too broad is worse than no match at all.
+
+---
+
+### 🛡️ Add OS Protection Rules
+
+Some directories are sacred. Untouchable. Forever.
+
+- 🦀 Rust: `rust/src/domain/os.rs`
+- ⚡ Zig: `zig/src/domain/os.zig`
+
+Think `/System`, `C:\Windows`, `~/.ssh`. If deleting it would ruin someone's day (or career), it goes here.
+
+---
+
+## 🛠️ Dev Workflow
+
+We use a `justfile`. Install [`just`](https://github.com/casey/just)—it's small, fast, and worth it.
+
+### 🦀 Rust
+
 ```bash
-git clone https://github.com/Mwangi-Derrick/dev-purge.git
+just build-rust     # compile release binary
+just test-rust      # run all tests
+just lint-rust      # clippy + fmt checks
+just fmt-rust       # auto-format
+```
+
+### ⚡ Zig
+
+```bash
+just build-zig      # optimized native build
+just test-zig       # run Zig tests
+```
+
+No `just`? Open the `justfile` and run the raw commands. They're not magic.
+
+---
+
+## 🔁 Submitting a PR
+
+```bash
+# 1. Fork the repo and clone
+git clone https://github.com/<your-handle>/dev-purge.git
 cd dev-purge
+
+# 2. Branch off main
+git checkout -b feature/python-venv-cleanup   # or fix/ or docs/
+
+# 3. Make your changes (both engines if applicable)
+
+# 4. Dry-run to verify
+./dev-purge --dry-run
+
+# 5. Run tests and linting
+just test-rust
+just lint-rust
+
+# 6. Commit using conventional commits
+git commit -m "feat: add support for Python venv artifacts"
+
+# 7. Push and open PR
+git push origin feature/python-venv-cleanup
 ```
 
-#### Step 2: Create a Branch
-```bash
-git checkout -b feature/your-awesome-feature
-```
-
-Branch naming:
-- `feature/` for new features
-- `fix/` for bug fixes
-- `docs/` for documentation updates
-
-#### Step 3: Make Changes
-
-**For script changes:**
-- Test in `--dry-run` mode first
-- Ensure it still protects IDE directories
-- Add a comment if the logic isn't obvious
-
-**For documentation:**
-- Keep it concise
-- Use examples where helpful
-- Link to related sections
-
-#### Step 4: Test Thoroughly
-
-```bash
-# Test the dry-run
-./dev-purge.sh --dry-run
-
-# Test in an isolated directory with sample junk
-mkdir ~/test-purge-dir
-cd ~/test-purge-dir
-mkdir -p target node_modules
-echo "test" > target/junk.txt
-~/dev-purge.sh --dry-run
-~/dev-purge.sh
-```
-
-#### Step 5: Commit & Push
-
-```bash
-git add .
-git commit -m "feat: add support for X"  # or fix: bug fix, or docs: update
-git push origin feature/your-awesome-feature
-```
-
-#### Step 6: Open a Pull Request
-
-On GitHub:
-1. Go to your fork
-2. Click "Compare & pull request"
-3. Write a clear description of your changes
-4. Reference any related issues (#123)
-
----
-
-## 📋 Contribution Checklist
-
-Before submitting:
-
-- [ ] Changes have been tested (`--dry-run` works?)
-- [ ] IDE directories are still protected
-- [ ] No new errors or permission issues
-- [ ] Documentation is updated if applicable
-- [ ] Commit messages are clear
-- [ ] No breaking changes (or clearly noted in PR)
-
----
-
-## 🚀 Roadmap Contributions
-
-### High Priority (Help Wanted!)
-
-1. **Rust Rewrite** (`purge-rs`)
-   - We want to make this **10x faster** with parallel scanning
-   - Using `walkdir` + `rayon` for multi-threaded traversal
-   - Status: Early design stage
-   - Interested? Open an issue to discuss architecture
-
-2. **Cross-Platform Testing**
-   - Test on Windows (Git Bash, PowerShell, WSL)
-   - Test on macOS (Intel & Apple Silicon)
-   - Test on Linux (Ubuntu, Fedora, Arch)
-
-3. **Docker Improvements**
-   - Add safer Docker pruning modes
-   - Support for `docker-compose` cleanup
-   - Preserve volumes intelligently
-
-### Medium Priority
-
-4. **Configuration File** (`.purgeignore`)
-   - Let users define custom exclusions
-   - Similar to `.gitignore` format
-
-5. **Metrics & Reporting**
-   - Show before/after disk usage
-   - Export cleanup summary as JSON/CSV
-   - Track total space saved over time
-
----
-
-## 💬 Code Style
-
-Keep it simple and readable:
-
-```bash
-# ✅ Good
-if command -v cargo &> /dev/null; then
-    echo "🦀 Cleaning Rust..."
-    rm -rf "$HOME/.cargo/registry/cache"/*
-fi
-
-# ❌ Avoid
-if [ -x "$(command -v cargo)" ]; then rm -rf $HOME/.cargo/registry/cache/*; fi
-```
-
-**Guidelines:**
-- Add comments for non-obvious logic
-- Use descriptive variable names
-- Keep emoji for visual clarity but not overuse
-- Test edge cases (paths with spaces, permissions, etc.)
-
----
-
-## 🧪 Testing Your Changes
-
-### Safety First
-Always test destructive operations in isolation:
-
-```bash
-# Create a test project
-mkdir ~/test-dev-purge
-cd ~/test-dev-purge
-mkdir -p src/target src/node_modules
-touch src/target/build.log
-touch src/node_modules/package.json
-
-# Run dry-run
-bash ~/dev-purge.sh --dry-run
-
-# Verify it found the targets
-# Then run actual cleanup if confident
-```
-
-### Cross-Platform
-If possible, test on:
-- Windows (Git Bash)
-- macOS (Zsh/Bash)
-- Linux (Ubuntu/Fedora)
-
----
-
-## ❓ Questions?
-
-- **GitHub Discussions:** Ask anything technical or design-related
-- **GitHub Issues:** Report bugs or request features
-- **Pull Request Comments:** Discuss changes directly
-
----
-
-## 📝 Commit Message Format
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+**Commit message format:**
 
 ```
-feat: add support for Poetry cache cleanup
-fix: handle paths with spaces correctly
-docs: update README with Docker tips
-test: add edge case tests for permission errors
+feat: add X
+fix: handle Y edge case
+docs: clarify Z
+test: cover W scenario
 ```
 
 ---
 
-## 🎉 Contributors
+## ✅ PR Checklist
 
-Thanks to everyone who's contributed! You're helping developers reclaim their SSD space one cleanup at a time.
+Before you open that PR, run through this:
+
+- [ ] Changes implemented in **both** Rust and Zig engines (no engine left behind)
+- [ ] `--dry-run` shows exactly what you expect—nothing more, nothing less
+- [ ] `just test-rust` passes clean
+- [ ] `just lint-rust` is happy (no clippy warnings)
+- [ ] PR description explains *why* this pattern or rule is needed, not just what it does
+- [ ] No overly broad patterns that could match unintended directories
 
 ---
 
-## License
+## 🧪 Safety First. Always.
 
-By contributing, you agree your work is licensed under the MIT License (same as the project).
+This tool **deletes things**. That's the whole point.
 
-Happy coding! 🚀
+But deleting the wrong things is a support ticket, a lost project, or a very bad afternoon. So when you add a new rule, sanity check it hard:
+
+1. **Too broad?** Does `tmp` match things you didn't expect? Test it.
+2. **False positives?** Does it incorrectly match production-like project structures?
+3. **OS protections respected?** Your rule shouldn't fire inside protected system paths.
+
+**The golden rule:** `--dry-run` first. Then `--dry-run` again. *Then* run for real.
+
+---
+
+## 🐛 Reporting Bugs
+
+Open a [GitHub Issue](https://github.com/Mwangi-Derrick/dev-purge/issues) with:
+
+- A clear title (e.g., `"Crashes on paths with spaces on macOS"`)
+- Steps to reproduce
+- Your OS and shell (Git Bash, Zsh, PowerShell, WSL, etc.)
+- The full error output
+
+---
+
+## 💬 Questions? Ideas? Just want to talk shop?
+
+Open a [GitHub Discussion](https://github.com/Mwangi-Derrick/dev-purge/discussions) or file an issue tagged `help wanted`.
+
+We respond faster than `cargo clean`.
+
+---
+
+*Built for developers, by developers. Go save some disk space.* 🚀
