@@ -2,7 +2,7 @@
 name = "dev-purge"
 version = "0.1.0"
 edition = "2021"
-license-file = "LICENSE"
+license-file = "../LICENSE"
 description = "Scan and delete common developer build artifacts (target/, node_modules/, __pycache__/...)"
 repository = "https://github.com/Mwangi-Derrick/dev-purge"
 
