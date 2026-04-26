@@ -73,8 +73,16 @@ jobs:
     - name: Cache dependencies
       uses: Swatinem/rust-cache@v2
 
+    - name: Install cross-compilation tools
+      if: matrix.target == 'aarch64-unknown-linux-gnu'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu
+
     - name: Build release
       run: cargo build --release --target ${{ matrix.target }}
+      env:
+        CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER: ${{ matrix.target == 'aarch64-unknown-linux-gnu' && 'aarch64-linux-gnu-gcc' || '' }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
