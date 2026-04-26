@@ -1,7 +1,7 @@
-//! Pattern configuration using a compact, DX-centric registry.
+//! Pattern configuration using a high-fidelity declarative DSL.
 //!
-//! Engineered for clarity and rapid extensibility by OSS contributors.
-//! Each rule defines what constitutes a "purgeable" artifact.
+//! Engineered for clarity, safety, and rapid extensibility.
+//! This registry serves as the heuristic engine for artifact detection.
 
 use std::ffi::OsStr;
 use std::path::Path;
@@ -12,7 +12,7 @@ pub enum PatternKind {
     Exact,
     /// Match prefix (e.g., "cmake-build-")
     Prefix,
-    /// Only match if sibling file exists (e.g., "bin" if ".csproj" exists)
+    /// Only match if sibling file/extension exists
     Guarded(&'static str),
 }
 
@@ -29,15 +29,33 @@ pub enum Category {
     Other,
 }
 
-/// Compact Artifact Registry
-/// Format: (Category, PatternKind, Name, Description)
-type ArtifactRule = (Category, PatternKind, &'static str, &'static str);
+#[derive(Clone, Copy, Debug)]
+pub struct Pattern {
+    pub category: Category,
+    pub kind: PatternKind,
+    pub name: &'static str,
+    pub description: &'static str,
+}
 
-use Category::*;
+macro_rules! register_artifacts {
+    ($( ($cat:ident, $kind:expr, $name:expr, $desc:expr) ),* $(,)?) => {
+        const ARTIFACT_REGISTRY: &[Pattern] = &[
+            $(
+                Pattern {
+                    category: Category::$cat,
+                    kind: $kind,
+                    name: $name,
+                    description: $desc,
+                }
+            ),*
+        ];
+    };
+}
+
 use PatternKind::*;
 
-const ARTIFACT_REGISTRY: &[ArtifactRule] = &[
-    // Core / Generic
+register_artifacts![
+    // Core / Language-agnostic
     (Core, Exact, "target", "Rust build artifacts"),
     (Core, Exact, "dist", "Generic distribution folder"),
     (Core, Exact, "build", "Generic build artifacts"),
@@ -49,13 +67,11 @@ const ARTIFACT_REGISTRY: &[ArtifactRule] = &[
     (Python, Exact, "venv", "Python virtual environment"),
     (Python, Exact, ".pytest_cache", "Pytest execution cache"),
     (Python, Exact, ".mypy_cache", "Mypy type check cache"),
-    (Python, Exact, ".ruff_cache", "Ruff lint cache"),
 
     // Web / JavaScript / TypeScript
     (Node, Exact, "node_modules", "Node.js dependencies"),
     (Node, Exact, ".next", "Next.js build artifacts"),
     (Node, Exact, ".nuxt", "Nuxt.js build artifacts"),
-    (Node, Exact, ".parcel-cache", "Parcel build cache"),
     (Node, Exact, ".turbo", "Turborepo build cache"),
     (Node, Exact, ".vite", "Vite build cache"),
 
@@ -85,20 +101,11 @@ const ARTIFACT_REGISTRY: &[ArtifactRule] = &[
     (Other, Prefix, "cmake-build-", "CMake build directory"),
 ];
 
-#[derive(Clone, Copy, Debug)]
-pub struct Pattern {
-    pub name: &'static str,
-    pub kind: PatternKind,
-}
-
 pub struct PurgeConfig;
 
 impl PurgeConfig {
-    pub fn patterns() -> Vec<Pattern> {
+    pub fn patterns() -> &'static [Pattern] {
         ARTIFACT_REGISTRY
-            .iter()
-            .map(|(_, kind, name, _)| Pattern { name, kind: *kind })
-            .collect()
     }
 }
 
