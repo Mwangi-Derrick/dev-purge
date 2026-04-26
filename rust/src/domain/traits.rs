@@ -28,6 +28,16 @@ pub struct ScanResult {
     pub path: PathBuf,
     pub size_bytes: u64,
     pub category: CleanupCategory,
+    pub artifact_type: ArtifactType,
+}
+
+/// Type of artifact, either a physical file path or a virtual resource (like Docker).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum ArtifactType {
+    Physical,
+    DockerImage(String),     // Image ID
+    DockerContainer(String), // Container ID
+    DockerVolume(String),    // Volume Name
 }
 
 /// Categories of files/directories that can be cleaned up.
@@ -64,5 +74,6 @@ pub trait SafetyChecker {
 pub trait Cleaner {
     /// Clean up the given scan results. If dry_run is true, only simulate.
     /// If permanent is true, delete files immediately instead of moving to trash.
-    fn clean(&self, results: &[ScanResult], dry_run: bool, permanent: bool) -> Result<CleanupStats>;
+    fn clean(&self, results: &[ScanResult], dry_run: bool, permanent: bool)
+        -> Result<CleanupStats>;
 }
