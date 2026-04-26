@@ -1,4 +1,4 @@
-use crate::types::{DeleteStats, Finding};
+use crate::domain::types::{DeleteStats, Finding};
 use colored::Colorize;
 use std::fs;
 

@@ -1,4 +1,4 @@
-use crate::types::Finding;
+use crate::domain::types::Finding;
 use colored::Colorize;
 use std::path::Path;
 

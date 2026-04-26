@@ -1,4 +1,4 @@
-use crate::types::Finding;
+use crate::domain::types::Finding;
 use rayon::prelude::*;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
