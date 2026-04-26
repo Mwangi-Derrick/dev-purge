@@ -98,7 +98,7 @@ fn test_standard_cleaner_dry_run() {
     let cleaner = StandardCleaner;
 
     let results = scanner.scan(temp.path()).unwrap();
-    let stats = cleaner.clean(&results, true).unwrap(); // dry run
+    let stats = cleaner.clean(&results, true, false).unwrap(); // dry run
 
     // In dry run, nothing should be deleted but we get stats about what would be deleted
     assert_eq!(stats.items_deleted, 1); // Would delete 1 item
@@ -127,7 +127,7 @@ fn test_standard_cleaner_actual_deletion() {
     let cleaner = StandardCleaner;
 
     let results = scanner.scan(temp.path()).unwrap();
-    let stats = cleaner.clean(&results, false).unwrap(); // actual deletion
+    let stats = cleaner.clean(&results, false, true).unwrap(); // actual deletion (permanent for test)
 
     // Files should be deleted
     assert!(!temp.path().join("target").exists());
