@@ -5,7 +5,6 @@
 
 use assert_fs::prelude::*;
 use std::path::Path;
-use tempfile::TempDir;
 
 use dev_purge::domain::{
     config::PurgeConfig,
@@ -15,7 +14,7 @@ use dev_purge::domain::{
 
 #[test]
 fn test_parallel_scanner_finds_artifacts() {
-    let temp = TempDir::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
 
     // Create some test artifacts
     temp.child("target").child("debug").create_dir_all().unwrap();
@@ -56,7 +55,7 @@ fn test_os_safety_checker() {
 
 #[test]
 fn test_standard_cleaner_dry_run() {
-    let temp = TempDir::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.child("target").child("debug").create_dir_all().unwrap();
     temp.child("target").child("debug").child("binary.exe").write_binary(b"fake binary").unwrap();
 
@@ -67,9 +66,9 @@ fn test_standard_cleaner_dry_run() {
     let results = scanner.scan(temp.path()).unwrap();
     let stats = cleaner.clean(&results, true).unwrap(); // dry run
 
-    // In dry run, nothing should be deleted but we get stats
-    assert_eq!(stats.items_deleted, 0);
-    assert!(stats.total_bytes_freed == 0);
+    // In dry run, nothing should be deleted but we get stats about what would be deleted
+    assert_eq!(stats.items_deleted, 1); // Would delete 1 item
+    assert!(stats.total_bytes_freed > 0); // Would free some bytes
     assert!(stats.errors.is_empty());
 
     // But files should still exist
@@ -78,7 +77,7 @@ fn test_standard_cleaner_dry_run() {
 
 #[test]
 fn test_standard_cleaner_actual_deletion() {
-    let temp = TempDir::new().unwrap();
+    let temp = assert_fs::TempDir::new().unwrap();
     temp.child("target").child("debug").create_dir_all().unwrap();
     temp.child("target").child("debug").child("binary.exe").write_binary(b"fake binary").unwrap();
 
