@@ -94,7 +94,7 @@ impl SafetyChecker for OsSafetyChecker {
 pub struct StandardCleaner;
 
 impl Cleaner for StandardCleaner {
-    fn clean(&self, results: &[ScanResult], dry_run: bool) -> Result<CleanupStats> {
+    fn clean(&self, results: &[ScanResult], dry_run: bool, permanent: bool) -> Result<CleanupStats> {
         let mut stats = CleanupStats {
             total_bytes_freed: 0,
             items_deleted: 0,
@@ -104,17 +104,25 @@ impl Cleaner for StandardCleaner {
         for result in results {
             if dry_run {
                 println!(
-                    "[DRY RUN] Would delete: {} ({} bytes)",
+                    "[DRY RUN] Would {}delete: {} ({} bytes)",
+                    if permanent { "permanently " } else { "" },
                     result.path.display(),
                     result.size_bytes
                 );
                 stats.total_bytes_freed += result.size_bytes;
                 stats.items_deleted += 1;
             } else {
-                match std::fs::remove_dir_all(&result.path) {
+                let op_result = if permanent {
+                    std::fs::remove_dir_all(&result.path).map_err(|e| anyhow::anyhow!(e))
+                } else {
+                    trash::delete(&result.path).map_err(|e| anyhow::anyhow!(e))
+                };
+
+                match op_result {
                     Ok(_) => {
                         println!(
-                            "✓ Deleted: {} ({} bytes)",
+                            "✓ {}: {} ({} bytes)",
+                            if permanent { "Permanently deleted" } else { "Moved to trash" },
                             result.path.display(),
                             result.size_bytes
                         );
