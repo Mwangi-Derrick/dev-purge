@@ -183,6 +183,44 @@ If you want the best of both worlds, the Rust version is the rich CLI and the Zi
 
 ---
 
+## 🏗️ Rust Version: Trait-Based Architecture
+
+The Rust implementation uses a **modular, extensible design** built around traits for easy contribution:
+
+### Core Traits
+
+- **`Scanner`**: Defines how to scan directories for artifacts
+- **`SafetyChecker`**: Validates paths are safe to delete
+- **`Cleaner`**: Handles the actual deletion logic
+
+### Adding New Scanners
+
+To add support for a new tool (e.g., Docker artifacts):
+
+```rust
+use dev_purge::domain::traits::{Scanner, ScanResult};
+
+pub struct DockerScanner;
+
+impl Scanner for DockerScanner {
+    fn scan(&self, root: &std::path::Path) -> anyhow::Result<Vec<ScanResult>> {
+        // Scan for Docker-related artifacts
+        Ok(vec![])
+    }
+}
+```
+
+### Architecture Benefits
+
+- **Extensible**: Add new scanners without touching core logic
+- **Testable**: Each trait can be unit tested independently
+- **Safe**: Safety checks are enforced by the trait system
+- **Parallel**: Built-in parallel scanning with Rayon
+
+The trait-based design makes it easy for contributors to extend dev-purge for new build tools and frameworks.
+
+---
+
 ## 🚨 Real-World Example: The 30GB Win
 
 ```bash
