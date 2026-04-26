@@ -16,7 +16,7 @@ impl PurgeConfig {
     /// Create configuration with hardcoded defaults
     pub fn hardcoded() -> Self {
         Self {
-            patterns: PatternsConfig::patterns(),
+            patterns: PatternsConfig::patterns().to_vec(),
         }
     }
 
