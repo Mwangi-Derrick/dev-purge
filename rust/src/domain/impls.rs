@@ -2,6 +2,23 @@
 //!
 //! This module provides concrete implementations that can be used
 //! directly or as examples for custom implementations.
+//!
+//! ## Extending dev-purge
+//!
+//! To add a new scanner for a specific tool:
+//!
+//! ```rust
+//! use dev_purge::domain::traits::{Scanner, ScanResult};
+//!
+//! pub struct DockerScanner;
+//!
+//! impl Scanner for DockerScanner {
+//!     fn scan(&self, root: &std::path::Path) -> anyhow::Result<Vec<ScanResult>> {
+//!         // Scan for Docker-related artifacts
+//!         Ok(vec![])
+//!     }
+//! }
+//! ```
 
 use std::path::Path;
 use std::sync::Mutex;
@@ -9,10 +26,9 @@ use anyhow::Result;
 use rayon::prelude::*;
 use walkdir::WalkDir;
 
-use super::config::{matches_any_pattern, Pattern, PurgeConfig};
+use super::config::{matches_any_pattern, PurgeConfig};
 use super::os;
 use super::traits::{Scanner, SafetyChecker, Cleaner, ScanResult, CleanupStats, CleanupCategory};
-use super::types::{Finding, DeleteStats};
 
 /// Default scanner using walkdir and rayon for parallel processing.
 pub struct ParallelScanner {
@@ -39,7 +55,7 @@ impl Scanner for ParallelScanner {
                 let path = entry.path();
 
                 if entry.file_type().is_dir() && matches_any_pattern(path, entry.file_name(), patterns) {
-                    if let Ok(metadata) = entry.metadata() {
+                    if let Ok(_metadata) = entry.metadata() {
                         let size = estimate_dir_size(path)?;
                         let result = ScanResult {
                             path: path.to_path_buf(),
