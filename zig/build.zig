@@ -6,10 +6,12 @@ pub fn build(b: *std.Build) void {
 
     const exe = b.addExecutable(.{
         .name = "dev-purge-zig",
-        .root_source_file = .{ .path = "src/main.zig" },
-        .target = target,
-        .optimize = optimize,
     });
+
+    exe.addCSourceFile(.{ .file = b.path("src/main.zig"), .flags = &.{} });
+    exe.linkLibC();
+    exe.setTarget(target);
+    exe.setBuildMode(optimize);
 
     b.installArtifact(exe);
 
