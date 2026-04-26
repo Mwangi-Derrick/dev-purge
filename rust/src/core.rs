@@ -1,4 +1,4 @@
-use crate::domain::{config::PurgeConfig, impls::{ParallelScanner, OsSafetyChecker, StandardCleaner}, safety, traits::ScanResult, types::Finding};
+use crate::domain::{config::PurgeConfig, impls::{ParallelScanner, OsSafetyChecker, StandardCleaner}, safety, traits::{Scanner, SafetyChecker, Cleaner}};
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
 
@@ -44,7 +44,7 @@ pub fn run() -> Result<()> {
 
     // Clean up
     let stats = cleaner.clean(&safe_results, false)?;
-    preview::print_summary(stats.total_bytes_freed, stats.errors.len());
+    preview::print_summary(stats.total_bytes_freed, stats.errors.len() as u64);
 
     Ok(())
 }
