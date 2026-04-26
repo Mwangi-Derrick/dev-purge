@@ -26,6 +26,7 @@ pub enum Category {
     DotNet,
     Mobile,
     Infra,
+    Docker,
     Other,
 }
 
@@ -96,6 +97,10 @@ register_artifacts![
     (Infra, Exact, ".terraform", "Terraform state/plugins"),
     (Infra, Exact, "zig-cache", "Zig build cache"),
     (Infra, Exact, "zig-out", "Zig binary output"),
+
+    // Docker
+    (Docker, Exact, ".docker", "Local Docker configuration/context"),
+    (Docker, Prefix, "docker-build-", "Docker build artifacts"),
 
     // Prefixes
     (Other, Prefix, "cmake-build-", "CMake build directory"),

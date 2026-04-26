@@ -15,6 +15,7 @@ pub const Category = enum {
     DotNet,
     Mobile,
     Infra,
+    Docker,
     Other,
 };
 
@@ -69,6 +70,10 @@ pub const ARTIFACT_REGISTRY = [_]Rule{
     .{ .category = .Infra, .kind = .Exact, .name = ".terraform", .description = "Terraform state/plugins" },
     .{ .category = .Infra, .kind = .Exact, .name = "zig-cache", .description = "Zig build cache" },
     .{ .category = .Infra, .kind = .Exact, .name = "zig-out", .description = "Zig binary output" },
+
+    // Docker
+    .{ .category = .Docker, .kind = .Exact, .name = ".docker", .description = "Local Docker configuration/context" },
+    .{ .category = .Docker, .kind = .Prefix, .name = "docker-build-", .description = "Docker build artifacts" },
 
     // Prefixes
     .{ .category = .Other, .kind = .Prefix, .name = "cmake-build-", .description = "CMake build directory" },
