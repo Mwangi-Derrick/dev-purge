@@ -5,3 +5,4 @@ pub mod safety;
 pub mod size;
 pub mod traits;
 pub mod types;
+pub mod patterns;
