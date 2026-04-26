@@ -328,20 +328,26 @@ Then restart: `sudo systemctl restart docker`
 
 ---
 
-## 🔮 Roadmap: Rust Rewrite
+## 🔮 Roadmap: The Path to v1.0 (The Surgical Update)
 
-The bash version is solid, but a Rust CLI would be **blazing fast** ⚡:
+Dev-Purge is moving towards a professional, server-ready `v1.0` release. Our strategy focuses on **Zero-Blame Safety** and **Global Distribution**.
 
-- [ ] Parallel directory scanning (multi-threaded with `rayon`)
-- [ ] Show exact size of each deletion before confirming
-- [ ] Real-time progress bar with `indicatif`
-- [ ] Configuration file (`.purgeignore`)
-- [ ] Watch mode (monitor & auto-clean)
-- [ ] Before/after disk metrics
-- [ ] Cross-platform binary (Windows/Mac/Linux)
+### 🛠️ v1.0 Objectives
 
-This is actively in the roadmap. Interested in contributing? See below!
-
+- [ ] **Surgical Safety (The "Trash" Rule)**: 
+  - Integrate with the OS trash bin instead of permanent deletion. If an "oopsie" happens, just hit Restore.
+  - Implement a `--force` flag requirement for non-interactive deletions.
+- [ ] **Server-Grade Cleaning (The "Deep" Update)**:
+  - **Docker API Integration**: Use `bollard` (Rust) to prune logs and volumes without touching the filesystem directly.
+  - **Large Log Rotation**: Auto-truncate massive `.log` files in common server directories.
+- [ ] **Professional Distribution**:
+  - [ ] Publish to **Crates.io** (The Rust Flagship).
+  - [ ] Add **Homebrew** and **Apt** repository support.
+  - [ ] Generate shell completions (Zsh/Fish/Bash).
+- [ ] **Documentation**:
+  - [ ] Write the **"Safety Manifesto"**: A deep dive into our 40+ protection rules.
+  - [ ] "Dev-Purge for Servers" deployment guide.
+x
 ---
 
 ## 📋 Safety Features
