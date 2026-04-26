@@ -1,9 +1,7 @@
 pub mod config;
-pub mod delete;
 pub mod impls;
 pub mod os;
 pub mod safety;
-pub mod scan;
 pub mod size;
 pub mod traits;
 pub mod types;
