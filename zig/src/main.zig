@@ -27,11 +27,11 @@ pub fn main() !void {
         std.debug.print("Mode: Dry-run (Heuristic detection only)\n", .{});
     }
 
-   var results = try std.ArrayList(scanner.ScanResult).initCapacity(allocator, 0);
+    var results = try std.ArrayList(scanner.ScanResult).initCapacity(allocator, 0);
     var root_dir = try std.fs.cwd().openDir(root_path, .{ .iterate = true });
     defer root_dir.close();
 
-    try scanner.scan(std.fs.cwd(), root_path, allocator, &results);
+    try scanner.scan(root_dir, root_path, allocator, &results);
 
     const cleaner = @import("domain/cleaner.zig");
     const stats = try cleaner.purge(results.items, dry_run);

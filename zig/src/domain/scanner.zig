@@ -7,11 +7,8 @@ pub const ScanResult = struct {
     size: u64,
 };
 
-pub fn scan(dir: std.fs.Dir, path: []const u8, allocator: std.mem.Allocator, results: *std.ArrayList(ScanResult)) !void {
-    var iterable_dir = try dir.openDir(path, .{ .iterate = true });
-    defer iterable_dir.close();
-
-    var iter = iterable_dir.iterate();
+pub fn scan(dir: std.fs.Dir, current_path: []const u8, allocator: std.mem.Allocator, results: *std.ArrayList(ScanResult)) !void {
+    var iter = dir.iterate();
     while (try iter.next()) |entry| {
         if (entry.kind != .directory) continue;
 
@@ -20,16 +17,16 @@ pub fn scan(dir: std.fs.Dir, path: []const u8, allocator: std.mem.Allocator, res
         // Skip protected paths (IDE, VCS, etc.)
         if (os_domain.isProtectedEntry(name)) continue;
 
-        const full_path = try std.fs.path.join(allocator, &.{ path, name });
+        const full_path = try std.fs.path.join(allocator, &.{ current_path, name });
 
-        if (config.matchesPattern(iterable_dir, name)) {
-            const size = try estimateDirSize(iterable_dir, name, allocator);
-            // Add allocator as first parameter to append
+        if (config.matchesPattern(dir, name)) {
+            const size = try estimateDirSize(dir, name, allocator);
             try results.append(allocator, .{ .path = full_path, .size = size });
-            // Do NOT recurse into matched artifacts
         } else {
-            // Recurse into unknown directories
-            try scan(iterable_dir, name, allocator, results);
+            // Recurse into subdirectories
+            var subdir = dir.openDir(name, .{ .iterate = true }) catch continue;
+            defer subdir.close();
+            try scan(subdir, full_path, allocator, results);
         }
     }
 }
