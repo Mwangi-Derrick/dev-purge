@@ -20,3 +20,9 @@ target/
 Thumbs.db
 .env
 .env.local
+
+# zig build artifacts
+**zig-build/
+**zig-build-out/
+**zig-cache/
+**zig-lib/
