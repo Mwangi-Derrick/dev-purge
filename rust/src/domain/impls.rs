@@ -69,7 +69,7 @@ impl Scanner for ParallelScanner {
             })?;
 
         let mut final_results = results.into_inner().unwrap();
-        final_results.sort_by(|a, b| b.size_bytes.cmp(&a.size_bytes));
+        final_results.sort_by_key(|r| std::cmp::Reverse(r.size_bytes));
         Ok(final_results)
     }
 }
