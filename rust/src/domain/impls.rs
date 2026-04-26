@@ -28,7 +28,9 @@ use walkdir::WalkDir;
 
 use super::config::{matches_any_pattern, PurgeConfig};
 use super::os;
-use super::traits::{Cleaner, CleanupCategory, CleanupStats, SafetyChecker, ScanResult, Scanner};
+use super::traits::{
+    ArtifactType, Cleaner, CleanupCategory, CleanupStats, SafetyChecker, ScanResult, Scanner,
+};
 
 /// Default scanner using walkdir and rayon for parallel processing.
 pub struct ParallelScanner {
@@ -63,6 +65,7 @@ impl Scanner for ParallelScanner {
                             path: path.to_path_buf(),
                             size_bytes: size,
                             category: CleanupCategory::BuildArtifact, // TODO: categorize based on pattern
+                            artifact_type: ArtifactType::Physical,
                         };
                         results.lock().unwrap().push(result);
                     }
@@ -94,7 +97,12 @@ impl SafetyChecker for OsSafetyChecker {
 pub struct StandardCleaner;
 
 impl Cleaner for StandardCleaner {
-    fn clean(&self, results: &[ScanResult], dry_run: bool, permanent: bool) -> Result<CleanupStats> {
+    fn clean(
+        &self,
+        results: &[ScanResult],
+        dry_run: bool,
+        permanent: bool,
+    ) -> Result<CleanupStats> {
         let mut stats = CleanupStats {
             total_bytes_freed: 0,
             items_deleted: 0,
@@ -112,17 +120,44 @@ impl Cleaner for StandardCleaner {
                 stats.total_bytes_freed += result.size_bytes;
                 stats.items_deleted += 1;
             } else {
-                let op_result = if permanent {
-                    std::fs::remove_dir_all(&result.path).map_err(|e| anyhow::anyhow!(e))
-                } else {
-                    trash::delete(&result.path).map_err(|e| anyhow::anyhow!(e))
+                let op_result = match &result.artifact_type {
+                    ArtifactType::Physical => {
+                        if permanent {
+                            std::fs::remove_dir_all(&result.path).map_err(|e| anyhow::anyhow!(e))
+                        } else {
+                            trash::delete(&result.path).map_err(|e| anyhow::anyhow!(e))
+                        }
+                    }
+                    ArtifactType::DockerImage(id) => {
+                        let rt = tokio::runtime::Runtime::new()?;
+                        let docker = bollard::Docker::connect_with_local_defaults()?;
+                        rt.block_on(docker.remove_image(id, None, None))
+                            .map_err(|e| anyhow::anyhow!(e))
+                    }
+                    ArtifactType::DockerContainer(id) => {
+                        let rt = tokio::runtime::Runtime::new()?;
+                        let docker = bollard::Docker::connect_with_local_defaults()?;
+                        rt.block_on(docker.remove_container(id, None))
+                            .map_err(|e| anyhow::anyhow!(e))
+                    }
+                    _ => Ok(()), // Volumes not implemented yet
                 };
 
                 match op_result {
                     Ok(_) => {
                         println!(
                             "✓ {}: {} ({} bytes)",
-                            if permanent { "Permanently deleted" } else { "Moved to trash" },
+                            match &result.artifact_type {
+                                ArtifactType::Physical =>
+                                    if permanent {
+                                        "Permanently deleted"
+                                    } else {
+                                        "Moved to trash"
+                                    },
+                                ArtifactType::DockerImage(_) => "Removed Docker image",
+                                ArtifactType::DockerContainer(_) => "Removed Docker container",
+                                _ => "Cleaned",
+                            },
                             result.path.display(),
                             result.size_bytes
                         );
@@ -130,7 +165,7 @@ impl Cleaner for StandardCleaner {
                         stats.items_deleted += 1;
                     }
                     Err(e) => {
-                        let error = format!("Failed to delete {}: {}", result.path.display(), e);
+                        let error = format!("Failed to clean {}: {}", result.path.display(), e);
                         eprintln!("✗ {}", error);
                         stats.errors.push(error);
                     }
