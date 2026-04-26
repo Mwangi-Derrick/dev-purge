@@ -125,23 +125,3 @@ pub fn matches_any_pattern(path: &Path, name: &OsStr, patterns: &[Pattern]) -> b
     })
 }
 
-pub fn is_protected_entry_name(name: &OsStr) -> bool {
-    matches!(
-        name.to_str(),
-        Some(
-            ".git"
-                | ".vscode"
-                | ".idea"
-                | ".cursor"
-                | ".config"
-                | "AppData"
-                | ".cargo"
-                | ".npm-global"
-                | ".env"
-                | ".env.local"
-                | ".gitignore"
-                | ".dockerignore"
-                | ".github"
-        )
-    )
-}
