@@ -132,6 +132,7 @@ impl Cleaner for StandardCleaner {
                         let rt = tokio::runtime::Runtime::new()?;
                         let docker = bollard::Docker::connect_with_local_defaults()?;
                         rt.block_on(docker.remove_image(id, None, None))
+                            .map(|_| ()) // Convert Vec<_> to () iterates over the results and returns () if successful
                             .map_err(|e| anyhow::anyhow!(e))
                     }
                     ArtifactType::DockerContainer(id) => {
