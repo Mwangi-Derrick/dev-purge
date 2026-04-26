@@ -1,4 +1,5 @@
 pub mod config;
+pub mod docker;
 pub mod impls;
 pub mod os;
 pub mod patterns;
