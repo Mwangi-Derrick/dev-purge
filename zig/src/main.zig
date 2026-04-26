@@ -22,9 +22,9 @@ pub fn main() !void {
 
     try safety.checkRootSafety(root_path);
 
-    std.debug.print("🛡️  DEV-PURGE (Zig): Systematically scanning {s}...\n", .{root_path});
+    std.debug.print("DEV-PURGE (Zig): Systematically scanning {s}...\n", .{root_path});
     if (dry_run) {
-        std.debug.print("🔍 Mode: Dry-run (Heuristic detection only)\n", .{});
+        std.debug.print("Mode: Dry-run (Heuristic detection only)\n", .{});
     }
 
    var results = try std.ArrayList(scanner.ScanResult).initCapacity(allocator, 0);
@@ -33,31 +33,12 @@ pub fn main() !void {
 
     try scanner.scan(std.fs.cwd(), root_path, allocator, &results);
 
-    var total_size: u64 = 0;
-    var count: usize = 0;
-    var errors: usize = 0;
+    const cleaner = @import("domain/cleaner.zig");
+    const stats = try cleaner.purge(results.items, dry_run);
 
-    for (results.items) |res| {
-        total_size += res.size;
-        count += 1;
-
-        const size_str = try formatSize(res.size, allocator);
-        if (dry_run) {
-            std.debug.print("[DRY RUN] Found artifact: {s} ({s})\n", .{ res.path, size_str });
-        } else {
-            std.debug.print("🗑️  Purging: {s} ({s})\n", .{ res.path, size_str });
-            // For actual deletion, we need to handle the path correctly.
-            // Since res.path is relative to cwd, we can just use deleteTreeAbsolute or similar.
-            std.fs.cwd().deleteTree(res.path) catch |err| {
-                std.debug.print("❌ Failed to purge {s}: {}\n", .{ res.path, err });
-                errors += 1;
-            };
-        }
-    }
-
-    const total_size_str = try formatSize(total_size, allocator);
-    std.debug.print("\n✨ Reclamation complete! Purged {d} items. Total space: {s}\n", .{ count, total_size_str });
-    if (errors > 0) std.debug.print("⚠️  Total errors encountered: {d}\n", .{errors});
+    const total_size_str = try formatSize(stats.total_bytes_freed, allocator);
+    std.debug.print("\n✨ Reclamation complete! Purged {d} items. Total space: {s}\n", .{ stats.items_deleted, total_size_str });
+    if (stats.errors > 0) std.debug.print("⚠️  Total errors encountered: {d}\n", .{stats.errors});
 }
 
 fn printUsage(exe_name: []const u8) void {
