@@ -167,7 +167,7 @@ impl PurgeConfig {
             },
         ]);
 
-        // Guarded Patterns (.NET, etc)
+        // .NET / C# / F# / VB
         patterns.extend(&[
             Pattern {
                 kind: PatternKind::Guarded { marker: ".csproj" },
@@ -178,12 +178,180 @@ impl PurgeConfig {
                 text: "obj",
             },
             Pattern {
+                kind: PatternKind::Guarded { marker: ".fsproj" },
+                text: "bin",
+            },
+            Pattern {
+                kind: PatternKind::Guarded { marker: ".fsproj" },
+                text: "obj",
+            },
+            Pattern {
+                kind: PatternKind::Guarded { marker: ".vbproj" },
+                text: "bin",
+            },
+            Pattern {
+                kind: PatternKind::Guarded { marker: ".vbproj" },
+                text: "obj",
+            },
+            Pattern {
                 kind: PatternKind::Guarded { marker: ".sln" },
                 text: "bin",
             },
             Pattern {
                 kind: PatternKind::Guarded { marker: ".sln" },
                 text: "obj",
+            },
+        ]);
+
+        // Go
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "vendor",
+            },
+        ]);
+
+        // Java / Kotlin / Scala / Gradle
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".gradle",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "gradle-app.setting",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".kotlin",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "out",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".idea",
+            },
+        ]);
+
+        // PHP
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "vendor",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "composer.lock",
+            },
+        ]);
+
+        // Ruby
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".bundle",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "vendor",
+            },
+        ]);
+
+        // Swift / iOS
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".build",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "DerivedData",
+            },
+        ]);
+
+        // Haskell
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "dist",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "dist-newstyle",
+            },
+        ]);
+
+        // Elixir / Erlang
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "_build",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "deps",
+            },
+        ]);
+
+        // Clojure
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "target",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".cpcache",
+            },
+        ]);
+
+        // R
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".Rproj.user",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".Rhistory",
+            },
+        ]);
+
+        // Julia
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "Manifest.toml",
+            },
+        ]);
+
+        // Crystal
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".crystal",
+            },
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "libs",
+            },
+        ]);
+
+        // Nim
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: "nimcache",
+            },
+        ]);
+
+        // V
+        patterns.extend(&[
+            Pattern {
+                kind: PatternKind::Exact,
+                text: ".v",
             },
         ]);
 
