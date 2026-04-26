@@ -58,19 +58,19 @@ fn is_system_dir(cwd: &Path) -> bool {
     #[cfg(windows)]
     {
         let s = cwd.to_string_lossy().to_lowercase().replace('/', "\\");
-        return s.starts_with("c:\\windows")
+        s.starts_with("c:\\windows")
             || s.starts_with("c:\\program files")
-            || s.starts_with("c:\\program files (x86)");
+            || s.starts_with("c:\\program files (x86)")
     }
 
     #[cfg(not(windows))]
     {
         let s = cwd.to_string_lossy();
-        return s == "/"
+        s == "/"
             || s.starts_with("/usr")
             || s.starts_with("/etc")
             || s.starts_with("/var")
-            || s.starts_with("/bin");
+            || s.starts_with("/bin")
     }
 }
 

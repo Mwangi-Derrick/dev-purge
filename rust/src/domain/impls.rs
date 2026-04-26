@@ -80,7 +80,7 @@ pub struct OsSafetyChecker;
 impl SafetyChecker for OsSafetyChecker {
     fn is_safe(&self, path: &Path) -> bool {
         !os::is_protected_root(path) && !path.components().any(|comp| {
-            comp.as_os_str().to_str().map_or(false, |s| os::is_protected_entry_name(s.as_ref()))
+            comp.as_os_str().to_str().is_some_and(|s| os::is_protected_entry_name(s.as_ref()))
         })
     }
 }

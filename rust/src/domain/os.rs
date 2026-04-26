@@ -162,9 +162,9 @@ fn is_protected_home_subpath(path: &Path) -> bool {
             &[".cargo", ".config", ".vscode", ".idea", ".cursor"],
         ) || matches_any_path_prefix(
             path,
-            local_app_data.as_ref().map(|v| &**v),
+            local_app_data.as_deref(),
             &["Local", "LocalLow", "Temp"],
-        ) || matches_any_path_prefix(path, app_data.as_ref().map(|v| &**v), &[]);
+        ) || matches_any_path_prefix(path, app_data.as_deref(), &[]);
     }
 
     let home = env::var_os("HOME").map(PathBuf::from);
