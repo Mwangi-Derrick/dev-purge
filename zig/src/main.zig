@@ -27,7 +27,7 @@ pub fn main() !void {
         std.debug.print("🔍 Mode: Dry-run (Heuristic detection only)\n", .{});
     }
 
-    var results = std.ArrayList(scanner.ScanResult).init(allocator);
+   var results = try std.ArrayList(scanner.ScanResult).initCapacity(allocator, 0);
     var root_dir = try std.fs.cwd().openDir(root_path, .{ .iterate = true });
     defer root_dir.close();
 
