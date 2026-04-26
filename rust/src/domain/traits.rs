@@ -63,5 +63,6 @@ pub trait SafetyChecker {
 /// Trait for performing cleanup operations.
 pub trait Cleaner {
     /// Clean up the given scan results. If dry_run is true, only simulate.
-    fn clean(&self, results: &[ScanResult], dry_run: bool) -> Result<CleanupStats>;
+    /// If permanent is true, delete files immediately instead of moving to trash.
+    fn clean(&self, results: &[ScanResult], dry_run: bool, permanent: bool) -> Result<CleanupStats>;
 }
