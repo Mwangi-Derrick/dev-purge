@@ -334,12 +334,12 @@ Dev-Purge is moving towards a professional, server-ready `v1.0` release. Our str
 
 ### 🛠️ v1.0 Objectives
 
-- [ ] **Surgical Safety (The "Trash" Rule)**: 
+- [x] **Surgical Safety (The "Trash" Rule)**: 
   - Integrate with the OS trash bin instead of permanent deletion. If an "oopsie" happens, just hit Restore.
   - Implement a `--force` flag requirement for non-interactive deletions.
-- [ ] **Server-Grade Cleaning (The "Deep" Update)**:
-  - **Docker API Integration**: Use `bollard` (Rust) to prune logs and volumes without touching the filesystem directly.
-  - **Large Log Rotation**: Auto-truncate massive `.log` files in common server directories.
+- [x] **Server-Grade Cleaning (The "Deep" Update)**:
+  - [x] **Docker API Integration**: Use `bollard` (Rust) to prune logs and volumes without touching the filesystem directly.
+  - [ ] **Large Log Rotation**: Auto-truncate massive `.log` files in common server directories.
 - [ ] **Professional Distribution**:
   - [ ] Publish to **Crates.io** (The Rust Flagship).
   - [ ] Add **Homebrew** and **Apt** repository support.
