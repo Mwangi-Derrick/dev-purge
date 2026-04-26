@@ -89,7 +89,7 @@ impl PurgeConfig {
         let mut patterns = Vec::new();
 
         for (kind, names) in PATTERNS_DSL {
-            for &name in names {
+            for &name in *names {
                 patterns.push(Pattern { name, kind: *kind });
             }
         }
