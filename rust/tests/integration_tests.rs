@@ -50,7 +50,11 @@ fn test_os_safety_checker() {
     // Protected paths
     assert!(!checker.is_safe(Path::new(".git")));
     assert!(!checker.is_safe(Path::new(".vscode")));
+
+    #[cfg(windows)]
     assert!(!checker.is_safe(Path::new("C:\\Windows\\System32")));
+    #[cfg(not(windows))]
+    assert!(!checker.is_safe(Path::new("/usr/bin")));
 }
 
 #[test]
