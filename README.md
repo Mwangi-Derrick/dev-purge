@@ -344,6 +344,10 @@ Dev-Purge is moving towards a professional, server-ready `v1.0` release. Our str
   - [ ] Publish to **Crates.io** (The Rust Flagship).
   - [ ] Add **Homebrew** and **Apt** repository support.
   - [ ] Generate shell completions (Zsh/Fish/Bash).
+- [ ] **The Interactive Experience (TUI)**:
+  - [ ] Integrate **Ratatui** for a dashboard-style UI.
+  - [ ] **Selective Purging**: Allow users to toggle specific folders via a list view.
+  - [ ] **Real-time Metrics**: Visual breakdown of disk usage by language/tool.
 - [ ] **Documentation**:
   - [ ] Write the **"Safety Manifesto"**: A deep dive into our 40+ protection rules.
   - [ ] "Dev-Purge for Servers" deployment guide.
