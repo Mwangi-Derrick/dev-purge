@@ -19,6 +19,7 @@
 //! - Protect system binaries: (System, Unix, Some("/bin"), None, "...")
 //! - Protect Windows app data: (IdeConfig, Windows, None, Some("AppData"), "...")
 
+use crate::domain::traits::ScanTier;
 use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
@@ -31,7 +32,7 @@ pub enum OsFamily {
     MacOS,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ProtectedPathCategory {
     System,
     IdeConfig,
@@ -319,7 +320,22 @@ const PROTECTED_PATH_RULES: &[ProtectedPathRuleTuple] = &[
     ),
 ];
 
-pub fn is_protected_entry_name(name: &OsStr) -> bool {
+fn is_category_protected(category: ProtectedPathCategory, tier: ScanTier) -> bool {
+    match tier {
+        ScanTier::Project => true, // Everything in registry is protected for Project tier
+        ScanTier::Cache => category != ProtectedPathCategory::ToolCache,
+        ScanTier::Deep => {
+            category != ProtectedPathCategory::ToolCache
+                && category != ProtectedPathCategory::IdeConfig
+        }
+        ScanTier::Aggressive => {
+            category == ProtectedPathCategory::System
+                || category == ProtectedPathCategory::ProjectMetadata
+        }
+    }
+}
+
+pub fn is_protected_entry_name(name: &OsStr, tier: ScanTier) -> bool {
     let name = match name.to_str() {
         Some(value) => value,
         None => return false,
@@ -327,17 +343,19 @@ pub fn is_protected_entry_name(name: &OsStr) -> bool {
 
     PROTECTED_PATH_RULES
         .iter()
-        .any(|(_category, os, _root_prefix, dir_name, _description)| {
-            dir_name == &Some(name) && matches_os_family(*os)
+        .any(|(category, os, _root_prefix, dir_name, _description)| {
+            dir_name == &Some(name)
+                && matches_os_family(*os)
+                && is_category_protected(*category, tier)
         })
 }
 
-pub fn is_protected_root(path: &Path) -> bool {
+pub fn is_protected_root(path: &Path, tier: ScanTier) -> bool {
     let normalized = normalize_path(path);
     PROTECTED_PATH_RULES
         .iter()
-        .any(|(_category, os, root_prefix, _dir_name, _description)| {
-            if !matches_os_family(*os) {
+        .any(|(category, os, root_prefix, _dir_name, _description)| {
+            if !matches_os_family(*os) || !is_category_protected(*category, tier) {
                 return false;
             }
 
@@ -348,7 +366,7 @@ pub fn is_protected_root(path: &Path) -> bool {
                 false
             }
         })
-        || is_protected_home_subpath(path)
+        || is_protected_home_subpath(path, tier)
 }
 
 fn matches_os_family(rule_os: OsFamily) -> bool {
@@ -370,29 +388,48 @@ fn normalize_path(path: &Path) -> String {
     normalized
 }
 
-fn is_protected_home_subpath(path: &Path) -> bool {
+fn is_protected_home_subpath(path: &Path, tier: ScanTier) -> bool {
     if cfg!(windows) {
         let local_app_data = env::var_os("LOCALAPPDATA");
         let app_data = env::var_os("APPDATA");
         let user_profile = env::var_os("USERPROFILE").map(PathBuf::from);
 
-        return matches_any_home_subpath(
-            path,
-            &user_profile,
-            &[".cargo", ".config", ".vscode", ".idea", ".cursor"],
-        ) || matches_any_path_prefix(
-            path,
-            local_app_data.as_deref(),
-            &["Local", "LocalLow", "Temp"],
-        ) || matches_any_path_prefix(path, app_data.as_deref(), &[]);
+        let home_subdirs = if tier >= ScanTier::Deep {
+            vec![]
+        } else if tier >= ScanTier::Cache {
+            vec![".config", ".vscode", ".idea", ".cursor"]
+        } else {
+            vec![".cargo", ".config", ".vscode", ".idea", ".cursor"]
+        };
+
+        if matches_any_home_subpath(path, &user_profile, &home_subdirs) {
+            return true;
+        }
+
+        if tier < ScanTier::Deep {
+            if matches_any_path_prefix(
+                path,
+                local_app_data.as_deref(),
+                &["Local", "LocalLow", "Temp"],
+            ) || matches_any_path_prefix(path, app_data.as_deref(), &[])
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     let home = env::var_os("HOME").map(PathBuf::from);
-    matches_any_home_subpath(
-        path,
-        &home,
-        &[".cargo", ".config", ".local", ".vscode", ".idea", ".cursor"],
-    )
+    let home_subdirs = if tier >= ScanTier::Deep {
+        vec![".local"] // Still protect binaries maybe?
+    } else if tier >= ScanTier::Cache {
+        vec![".config", ".local", ".vscode", ".idea", ".cursor"]
+    } else {
+        vec![".cargo", ".config", ".local", ".vscode", ".idea", ".cursor"]
+    };
+
+    matches_any_home_subpath(path, &home, &home_subdirs)
 }
 
 fn matches_any_home_subpath(path: &Path, home: &Option<PathBuf>, subdirs: &[&str]) -> bool {
