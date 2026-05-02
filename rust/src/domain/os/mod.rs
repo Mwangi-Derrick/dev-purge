@@ -7,10 +7,13 @@ use crate::domain::traits::ScanTier;
 use std::ffi::OsStr;
 use std::path::Path;
 
-pub mod linux;
-pub mod macos;
+// Unix module contains linux and mac submodules
 pub mod unix;
 pub mod windows;
+
+// Re-export platform-specific functionality
+pub use unix::linux as linux;
+pub use unix::mac as macos;  // Note: renaming 'mac' to 'macos' for API consistency
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ProtectedPathCategory {

@@ -1,7 +1,7 @@
 //! Linux-specific path protection rules.
 
 use super::is_category_protected;
-use super::unix::{is_protected_home_subpath, BASE_RULES};
+use crate::domain::os::unix::{is_protected_home_subpath, BASE_RULES};
 use crate::domain::traits::ScanTier;
 use std::path::Path;
 
@@ -21,7 +21,7 @@ pub fn is_safe(path: &Path, tier: ScanTier) -> bool {
     !path.components().any(|comp| {
         comp.as_os_str()
             .to_str()
-            .is_some_and(|s| super::unix::is_protected_entry_name(std::ffi::OsStr::new(s), tier))
+            .is_some_and(|s| crate::domain::os::unix::is_protected_entry_name(std::ffi::OsStr::new(s), tier))
     })
 }
 

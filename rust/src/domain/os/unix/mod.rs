@@ -2,6 +2,8 @@
 
 use super::{is_category_protected, ProtectedPathCategory};
 use crate::domain::traits::ScanTier;
+pub mod linux;
+pub mod mac;
 use std::env;
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
