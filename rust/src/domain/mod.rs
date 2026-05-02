@@ -1,6 +1,6 @@
 pub mod config;
-pub mod docker;
 pub mod impls;
+pub mod integrations;
 pub mod os;
 pub mod patterns;
 pub mod safety;
