@@ -97,10 +97,26 @@ impl Scanner for ParallelScanner {
         let tier = self.config.tier;
         let results: Mutex<Vec<ScanResult>> = Mutex::new(Vec::new());
 
-        let mut entry_points = vec![root.to_path_buf()];
+        let mut entry_points =
+            vec![std::fs::canonicalize(root).unwrap_or_else(|_| root.to_path_buf())];
         entry_points.extend(self.get_jump_points(tier));
         entry_points.sort();
         entry_points.dedup();
+
+        // Filter out entry points that are sub-paths of other entry points to avoid double scanning
+        let mut final_entry_points = Vec::new();
+        for i in 0..entry_points.len() {
+            let mut is_subpath = false;
+            for j in 0..entry_points.len() {
+                if i != j && entry_points[i].starts_with(&entry_points[j]) {
+                    is_subpath = true;
+                    break;
+                }
+            }
+            if !is_subpath {
+                final_entry_points.push(entry_points[i].clone());
+            }
+        }
 
         let pb = ProgressBar::new_spinner();
         pb.set_style(
@@ -111,11 +127,12 @@ impl Scanner for ParallelScanner {
         pb.set_message("Scanning...");
         pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-        for entry_root in entry_points {
+        for entry_root in final_entry_points {
+            let current_entry_root = entry_root.clone();
             WalkDir::new(&entry_root)
                 .follow_links(false)
                 .into_iter()
-                .filter_entry(|e| {
+                .filter_entry(move |e| {
                     let path = e.path();
                     // Hard system exclusions to avoid stalling in huge system folders
                     let path_str = path.to_string_lossy().to_string().replace('\\', "/");
@@ -130,7 +147,7 @@ impl Scanner for ParallelScanner {
                     }
 
                     // Always allow the entry root itself
-                    if path == entry_root {
+                    if path == current_entry_root {
                         return true;
                     }
 
@@ -172,6 +189,11 @@ impl Scanner for ParallelScanner {
         pb.finish_and_clear();
 
         let mut final_results = results.into_inner().unwrap();
+
+        // Final deduplication by canonical path to be absolutely sure
+        final_results.sort_by(|a, b| a.path.cmp(&b.path));
+        final_results.dedup_by(|a, b| a.path == b.path);
+
         final_results.sort_by_key(|r| std::cmp::Reverse(r.size_bytes));
         Ok(final_results)
     }
