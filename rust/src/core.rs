@@ -77,7 +77,7 @@ pub fn run() -> Result<()> {
 
     // Add Docker scan (only in Aggressive mode)
     if tier == ScanTier::Aggressive {
-        let docker_scanner = crate::domain::docker::DockerScanner;
+        let docker_scanner = crate::domain::integrations::docker::DockerScanner;
         if let Ok(docker_results) = docker_scanner.scan(&scan_root) {
             scan_results.extend(docker_results);
         }
