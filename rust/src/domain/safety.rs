@@ -1,14 +1,15 @@
 use crate::domain::os;
+use crate::domain::traits::ScanTier;
 use anyhow::{bail, Result};
 use colored::Colorize;
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-pub fn check(cwd: &Path) -> Result<()> {
+pub fn check(cwd: &Path, tier: ScanTier) -> Result<()> {
     let cwd = canonicalize_best_effort(cwd);
 
-    if is_home_dir(&cwd)? {
+    if tier == ScanTier::Project && is_home_dir(&cwd)? {
         eprintln!(
             "{}  Run dev-purge from a projects directory, not your home folder.\n   {}",
             "✗".red(),
@@ -26,7 +27,7 @@ pub fn check(cwd: &Path) -> Result<()> {
         bail!("refusing to run from system directory");
     }
 
-    if os::is_protected_root(&cwd) {
+    if os::is_protected_root(&cwd, tier) {
         eprintln!(
             "{}  Refusing to run from a protected directory: {}",
             "✗".red(),
