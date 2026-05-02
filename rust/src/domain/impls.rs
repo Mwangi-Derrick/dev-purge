@@ -29,8 +29,8 @@ use walkdir::WalkDir;
 use super::config::{matches_any_pattern, PurgeConfig};
 use super::os;
 use super::traits::{
-    ArtifactType, Cleaner, CleanupCategory, CleanupStats, SafetyChecker, ScanResult, Scanner,
-    ScanTier,
+    ArtifactType, Cleaner, CleanupCategory, CleanupStats, SafetyChecker, ScanResult, ScanTier,
+    Scanner,
 };
 
 /// Default scanner using walkdir and rayon for parallel processing.
@@ -47,7 +47,6 @@ impl ParallelScanner {
 impl Scanner for ParallelScanner {
     fn scan(&self, root: &Path) -> Result<Vec<ScanResult>> {
         let patterns = self.config.patterns();
-        let tier = self.config.tier;
         let results: Mutex<Vec<ScanResult>> = Mutex::new(Vec::new());
 
         WalkDir::new(root)
