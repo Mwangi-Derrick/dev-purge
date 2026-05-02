@@ -136,7 +136,8 @@ impl Scanner for ParallelScanner {
 
                     // Early skip of protected entries
                     let name = e.file_name();
-                    !os::is_protected_entry_name(name, tier) || matches_any_pattern(path, name, patterns)
+                    !os::is_protected_entry_name(name, tier)
+                        || matches_any_pattern(path, name, patterns)
                 })
                 .par_bridge()
                 .for_each(|entry| {
