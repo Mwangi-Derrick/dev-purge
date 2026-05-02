@@ -323,9 +323,13 @@ const PROTECTED_PATH_RULES: &[ProtectedPathRuleTuple] = &[
 fn is_category_protected(category: ProtectedPathCategory, tier: ScanTier) -> bool {
     match tier {
         ScanTier::Project => true, // Everything in registry is protected for Project tier
-        ScanTier::Cache => category != ProtectedPathCategory::ToolCache,
+        ScanTier::Cache => {
+            category != ProtectedPathCategory::ToolCache
+                && category != ProtectedPathCategory::ToolBinary
+        }
         ScanTier::Deep => {
             category != ProtectedPathCategory::ToolCache
+                && category != ProtectedPathCategory::ToolBinary
                 && category != ProtectedPathCategory::IdeConfig
         }
         ScanTier::Aggressive => {
