@@ -19,15 +19,18 @@ pub fn print(root: &Path, findings: &[Finding]) {
         return;
     }
 
+    let display_count = 20;
+    let visible_findings = &findings[..findings.len().min(display_count)];
+
     let max_bytes = findings[0].bytes.max(1);
-    let max_path_len = findings
+    let max_path_len = visible_findings
         .iter()
         .map(|f| display_path_relative(root, &f.path).len())
         .max()
         .unwrap_or(0)
         .min(48);
 
-    for f in findings {
+    for f in visible_findings {
         let rel = display_path_relative(root, &f.path);
         let rel = truncate_end(&rel, max_path_len);
         let size = format_bytes(f.bytes);
@@ -58,6 +61,16 @@ pub fn print(root: &Path, findings: &[Finding]) {
         } else {
             println!("{}", line);
         }
+    }
+
+    if count > display_count {
+        let remaining_count = count - display_count;
+        let remaining_bytes: u64 = findings[display_count..].iter().map(|f| f.bytes).sum();
+        println!(
+            "\n  {} smaller items totaling {}",
+            remaining_count.to_string().dimmed(),
+            format_bytes(remaining_bytes).dimmed()
+        );
     }
 }
 
