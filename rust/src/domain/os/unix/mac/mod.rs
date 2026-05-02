@@ -41,10 +41,10 @@ pub fn is_protected_root(path: &Path, tier: ScanTier) -> bool {
     // Base Unix rules
     for (cat, _, root) in BASE_RULES {
         if let Some(prefix) = root {
-            if is_category_protected(*cat, tier) {
-                if path == Path::new(prefix) || path.starts_with(prefix) {
-                    return true;
-                }
+            if is_category_protected(*cat, tier)
+                && (path == Path::new(prefix) || path.starts_with(prefix))
+            {
+                return true;
             }
         }
     }
