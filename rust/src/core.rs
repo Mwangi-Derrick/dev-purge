@@ -47,6 +47,15 @@ pub fn run() -> Result<()> {
 
     safety::check(&scan_root, tier)?;
 
+    println!("🛡️  {}  {}", "DEV-PURGE:".bold(), "Smart Cleanup".dimmed());
+    match tier {
+        ScanTier::Project => println!("🔍 Mode: {} (safe)", "Project Caches".green()),
+        ScanTier::Cache => println!("🔍 Mode: {} (+ ~/.cargo, ~/.npm, etc)", "Global Caches".yellow()),
+        ScanTier::Deep => println!("🔍 Mode: {} (+ Library/Caches, AppData)", "Deep Clean".yellow()),
+        ScanTier::Aggressive => println!("🔍 Mode: {} (System Caches + Docker)", "AGGRESSIVE".red().bold()),
+    }
+    println!();
+
     // Compose the default pipeline using traits
     let config = PurgeConfig::for_tier(tier);
     let scanner = ParallelScanner::new(config);
@@ -56,10 +65,12 @@ pub fn run() -> Result<()> {
     // Scan for candidates
     let mut scan_results = scanner.scan(&scan_root)?;
 
-    // Add Docker scan
-    let docker_scanner = crate::domain::docker::DockerScanner;
-    if let Ok(docker_results) = docker_scanner.scan(&scan_root) {
-        scan_results.extend(docker_results);
+    // Add Docker scan (only in Aggressive mode)
+    if tier == ScanTier::Aggressive {
+        let docker_scanner = crate::domain::docker::DockerScanner;
+        if let Ok(docker_results) = docker_scanner.scan(&scan_root) {
+            scan_results.extend(docker_results);
+        }
     }
 
     // Filter safe results (Docker results are inherently safe as they use the API)
