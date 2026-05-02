@@ -125,9 +125,14 @@ impl Scanner for ParallelScanner {
                         return false;
                     }
 
+                    // Always allow the entry root itself
+                    if path == entry_root {
+                        return true;
+                    }
+
                     // Early skip of protected entries
                     let name = e.file_name();
-                    os::is_safe(path, tier) || matches_any_pattern(path, name, patterns)
+                    !os::is_protected_entry_name(name, tier) || matches_any_pattern(path, name, patterns)
                 })
                 .par_bridge()
                 .for_each(|entry| {
