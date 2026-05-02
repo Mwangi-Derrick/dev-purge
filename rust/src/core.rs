@@ -6,6 +6,7 @@ use crate::domain::{
 };
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
+use colored::Colorize;
 use std::io::{self, Write};
 
 pub fn run() -> Result<()> {
