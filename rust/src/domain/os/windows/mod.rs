@@ -51,10 +51,11 @@ pub fn is_protected_root(path: &Path, tier: ScanTier) -> bool {
     for (cat, _, root) in RULES {
         if let Some(prefix) = root {
             let prefix = prefix.to_lowercase();
-if is_category_protected(*cat, tier) 
-    && (normalized == prefix || normalized.starts_with(&format!("{}\\", prefix))) {
-    return true;
-}
+            if is_category_protected(*cat, tier)
+                && (normalized == prefix || normalized.starts_with(&format!("{}\\", prefix)))
+            {
+                return true;
+            }
         }
     }
 
