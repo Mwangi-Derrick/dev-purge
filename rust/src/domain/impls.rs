@@ -21,8 +21,10 @@
 //! ```
 
 use anyhow::Result;
+use indicatif::{ProgressBar, ProgressStyle};
 use rayon::prelude::*;
-use std::path::Path;
+use std::env;
+use std::path::{Path, PathBuf};
 use std::sync::Mutex;
 use walkdir::WalkDir;
 
@@ -42,6 +44,47 @@ impl ParallelScanner {
     pub fn new(config: PurgeConfig) -> Self {
         Self { config }
     }
+
+    fn get_jump_points(&self, tier: ScanTier) -> Vec<PathBuf> {
+        let mut points = Vec::new();
+
+        if tier >= ScanTier::Cache {
+            // Rust, Bun, Go
+            let home = env::var_os("HOME")
+                .map(PathBuf::from)
+                .or_else(|| env::var_os("USERPROFILE").map(PathBuf::from));
+
+            if let Some(home) = home {
+                points.push(home.join(".cargo"));
+                points.push(home.join(".bun"));
+                points.push(home.join("go"));
+            }
+
+            // npm, uv
+            if let Some(appdata) = env::var_os("LOCALAPPDATA").map(PathBuf::from) {
+                points.push(appdata.join("npm-cache"));
+                points.push(appdata.join("uv"));
+            }
+        }
+
+        if tier >= ScanTier::Deep {
+            if let Some(temp) = env::var_os("TEMP").map(PathBuf::from) {
+                points.push(temp);
+            }
+            #[cfg(unix)]
+            points.push(PathBuf::from("/tmp"));
+
+            if let Some(appdata) = env::var_os("LOCALAPPDATA").map(PathBuf::from) {
+                points.push(appdata.join("Microsoft/TypeScript"));
+            }
+        }
+
+        points
+            .into_iter()
+            .filter(|p| p.exists())
+            .map(|p| std::fs::canonicalize(p).unwrap_or_else(|_| p))
+            .collect()
+    }
 }
 
 impl Scanner for ParallelScanner {
@@ -50,38 +93,73 @@ impl Scanner for ParallelScanner {
         let tier = self.config.tier;
         let results: Mutex<Vec<ScanResult>> = Mutex::new(Vec::new());
 
-        WalkDir::new(root)
-            .follow_links(false)
-            .into_iter()
-            .filter_entry(|e| {
-                // Early skip of protected entries to save time and avoid permission errors
-                let name = e.file_name();
-                !os::is_protected_entry_name(name, tier)
-            })
-            .par_bridge()
-            .for_each(|entry| {
-                let entry = match entry {
-                    Ok(e) => e,
-                    Err(_) => return, // Skip entries we can't access
-                };
-                let path = entry.path();
+        let mut entry_points = vec![root.to_path_buf()];
+        entry_points.extend(self.get_jump_points(tier));
+        entry_points.sort();
+        entry_points.dedup();
 
-                if entry.file_type().is_dir()
-                    && matches_any_pattern(path, entry.file_name(), patterns)
-                {
-                    if let Ok(_metadata) = entry.metadata() {
-                        if let Ok(size) = estimate_dir_size(path) {
-                            let result = ScanResult {
-                                path: path.to_path_buf(),
-                                size_bytes: size,
-                                category: CleanupCategory::BuildArtifact, // TODO: categorize based on pattern
-                                artifact_type: ArtifactType::Physical,
-                            };
-                            results.lock().unwrap().push(result);
+        let pb = ProgressBar::new_spinner();
+        pb.set_style(
+            ProgressStyle::default_spinner()
+                .template("{spinner:.green} {msg}")
+                .unwrap(),
+        );
+        pb.set_message("Scanning...");
+        pb.enable_steady_tick(std::time::Duration::from_millis(100));
+
+        for entry_root in entry_points {
+            WalkDir::new(&entry_root)
+                .follow_links(false)
+                .into_iter()
+                .filter_entry(|e| {
+                    let path = e.path();
+                    // Hard system exclusions to avoid stalling in huge system folders
+                    let path_str = path.to_string_lossy().to_string().replace('\\', "/");
+                    if path_str.contains("/Windows")
+                        || path_str.contains("/Program Files")
+                        || path_str.contains("/$Recycle.Bin")
+                        || path_str.contains("/proc")
+                        || path_str.contains("/sys")
+                        || path_str.contains("/dev")
+                    {
+                        return false;
+                    }
+
+                    // Early skip of protected entries
+                    let name = e.file_name();
+                    os::is_safe(path, tier) || matches_any_pattern(path, name, patterns)
+                })
+                .par_bridge()
+                .for_each(|entry| {
+                    let entry = match entry {
+                        Ok(e) => e,
+                        Err(_) => return, // Skip entries we can't access
+                    };
+                    let path = entry.path();
+
+                    if entry.file_type().is_dir()
+                        && matches_any_pattern(path, entry.file_name(), patterns)
+                    {
+                        if let Ok(_metadata) = entry.metadata() {
+                            if let Ok(size) = estimate_dir_size(path) {
+                                let result = ScanResult {
+                                    path: path.to_path_buf(),
+                                    size_bytes: size,
+                                    category: CleanupCategory::BuildArtifact, // TODO: categorize based on pattern
+                                    artifact_type: ArtifactType::Physical,
+                                };
+                                results.lock().unwrap().push(result);
+                                pb.set_message(format!(
+                                    "Found {} items...",
+                                    results.lock().unwrap().len()
+                                ));
+                            }
                         }
                     }
-                }
-            });
+                });
+        }
+
+        pb.finish_and_clear();
 
         let mut final_results = results.into_inner().unwrap();
         final_results.sort_by_key(|r| std::cmp::Reverse(r.size_bytes));
