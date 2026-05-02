@@ -1,7 +1,7 @@
 //! macOS-specific path protection rules.
 
-use crate::domain::os::unix::{is_protected_home_subpath, BASE_RULES};
 use super::{is_category_protected, ProtectedPathCategory};
+use crate::domain::os::unix::{is_protected_home_subpath, BASE_RULES};
 use crate::domain::traits::ScanTier;
 use std::path::Path;
 
@@ -20,9 +20,9 @@ pub fn is_safe(path: &Path, tier: ScanTier) -> bool {
     }
 
     !path.components().any(|comp| {
-        comp.as_os_str()
-            .to_str()
-            .is_some_and(|s| crate::domain::os::unix::is_protected_entry_name(std::ffi::OsStr::new(s), tier))
+        comp.as_os_str().to_str().is_some_and(|s| {
+            crate::domain::os::unix::is_protected_entry_name(std::ffi::OsStr::new(s), tier)
+        })
     })
 }
 

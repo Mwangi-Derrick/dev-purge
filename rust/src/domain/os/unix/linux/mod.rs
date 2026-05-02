@@ -19,9 +19,9 @@ pub fn is_safe(path: &Path, tier: ScanTier) -> bool {
     }
 
     !path.components().any(|comp| {
-        comp.as_os_str()
-            .to_str()
-            .is_some_and(|s| crate::domain::os::unix::is_protected_entry_name(std::ffi::OsStr::new(s), tier))
+        comp.as_os_str().to_str().is_some_and(|s| {
+            crate::domain::os::unix::is_protected_entry_name(std::ffi::OsStr::new(s), tier)
+        })
     })
 }
 

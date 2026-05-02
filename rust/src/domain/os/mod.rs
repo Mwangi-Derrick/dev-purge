@@ -12,8 +12,8 @@ pub mod unix;
 pub mod windows;
 
 // Re-export platform-specific functionality
-pub use unix::linux as linux;
-pub use unix::mac as macos;  // Note: renaming 'mac' to 'macos' for API consistency
+pub use unix::linux;
+pub use unix::mac as macos; // Note: renaming 'mac' to 'macos' for API consistency
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum ProtectedPathCategory {
