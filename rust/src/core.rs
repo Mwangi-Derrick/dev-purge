@@ -51,9 +51,18 @@ pub fn run() -> Result<()> {
     println!("🛡️  {}  {}", "DEV-PURGE:".bold(), "Smart Cleanup".dimmed());
     match tier {
         ScanTier::Project => println!("🔍 Mode: {} (safe)", "Project Caches".green()),
-        ScanTier::Cache => println!("🔍 Mode: {} (+ ~/.cargo, ~/.npm, etc)", "Global Caches".yellow()),
-        ScanTier::Deep => println!("🔍 Mode: {} (+ Library/Caches, AppData)", "Deep Clean".yellow()),
-        ScanTier::Aggressive => println!("🔍 Mode: {} (System Caches + Docker)", "AGGRESSIVE".red().bold()),
+        ScanTier::Cache => println!(
+            "🔍 Mode: {} (+ ~/.cargo, ~/.npm, etc)",
+            "Global Caches".yellow()
+        ),
+        ScanTier::Deep => println!(
+            "🔍 Mode: {} (+ Library/Caches, AppData)",
+            "Deep Clean".yellow()
+        ),
+        ScanTier::Aggressive => println!(
+            "🔍 Mode: {} (System Caches + Docker)",
+            "AGGRESSIVE".red().bold()
+        ),
     }
     println!();
 
