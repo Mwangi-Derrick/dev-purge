@@ -188,6 +188,8 @@ register_artifacts![
     // Global Caches (Cache Tier)
     (Core, Exact, "registry", Cache, "Cargo registry cache"),
     (Core, Exact, "index", Cache, "Cargo index cache"),
+    (Core, Exact, "db", Cache, "Cargo git database"),
+    (Core, Exact, "mod", Cache, "Go module cache"),
     // Deep Cleaning (Deep Tier)
     (Core, Exact, "Caches", Deep, "System/App cache directory"),
     (Core, Exact, "Temp", Deep, "Temporary files"),
