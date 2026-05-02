@@ -49,7 +49,7 @@ impl ParallelScanner {
         let mut points = Vec::new();
 
         if tier >= ScanTier::Cache {
-            // Rust, Bun, Go
+            // Rust, Bun, Go, npm
             let home = env::var_os("HOME")
                 .map(PathBuf::from)
                 .or_else(|| env::var_os("USERPROFILE").map(PathBuf::from));
@@ -58,12 +58,16 @@ impl ParallelScanner {
                 points.push(home.join(".cargo"));
                 points.push(home.join(".bun"));
                 points.push(home.join("go"));
+                points.push(home.join(".npm"));
+                points.push(home.join(".cache/pip"));
+                points.push(home.join(".cache/uv"));
             }
 
-            // npm, uv
+            // Windows specific global caches
             if let Some(appdata) = env::var_os("LOCALAPPDATA").map(PathBuf::from) {
                 points.push(appdata.join("npm-cache"));
                 points.push(appdata.join("uv"));
+                points.push(appdata.join("pip/cache"));
             }
         }
 
