@@ -194,6 +194,9 @@ register_artifacts![
     (Core, Exact, "Caches", Deep, "System/App cache directory"),
     (Core, Exact, "Temp", Deep, "Temporary files"),
     (Core, Exact, ".cache", Deep, "User cache directory"),
+    // System Caches (Aggressive Tier)
+    (Other, Exact, "archives", Aggressive, "apt package archives"),
+    (Other, Exact, "pkg", Aggressive, "pacman/yay package cache"),
 ];
 
 pub struct PurgeConfig;
