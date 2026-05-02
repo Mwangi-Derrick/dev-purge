@@ -65,11 +65,35 @@ register_artifacts![
     (Core, Exact, "build", Project, "Generic build artifacts"),
     (Core, Exact, "out", Project, "Generic output directory"),
     // Python Ecosystem
-    (Python, Exact, "__pycache__", Project, "Python bytecode cache"),
-    (Python, Exact, ".venv", Project, "Python virtual environment"),
+    (
+        Python,
+        Exact,
+        "__pycache__",
+        Project,
+        "Python bytecode cache"
+    ),
+    (
+        Python,
+        Exact,
+        ".venv",
+        Project,
+        "Python virtual environment"
+    ),
     (Python, Exact, "venv", Project, "Python virtual environment"),
-    (Python, Exact, ".pytest_cache", Project, "Pytest execution cache"),
-    (Python, Exact, ".mypy_cache", Project, "Mypy type check cache"),
+    (
+        Python,
+        Exact,
+        ".pytest_cache",
+        Project,
+        "Pytest execution cache"
+    ),
+    (
+        Python,
+        Exact,
+        ".mypy_cache",
+        Project,
+        "Mypy type check cache"
+    ),
     (Python, Exact, "pip", Cache, "Pip cache directory"),
     // Web / JavaScript / TypeScript
     (Node, Exact, "node_modules", Project, "Node.js dependencies"),
@@ -114,10 +138,28 @@ register_artifacts![
         ".NET solution intermediates"
     ),
     // Mobile & Cross-Platform
-    (Mobile, Exact, ".dart_tool", Project, "Dart/Flutter metadata"),
-    (Mobile, Exact, "DerivedData", Project, "Xcode build artifacts"),
+    (
+        Mobile,
+        Exact,
+        ".dart_tool",
+        Project,
+        "Dart/Flutter metadata"
+    ),
+    (
+        Mobile,
+        Exact,
+        "DerivedData",
+        Project,
+        "Xcode build artifacts"
+    ),
     // Infrastructure & Tooling
-    (Infra, Exact, ".terraform", Project, "Terraform state/plugins"),
+    (
+        Infra,
+        Exact,
+        ".terraform",
+        Project,
+        "Terraform state/plugins"
+    ),
     (Infra, Exact, "zig-cache", Project, "Zig build cache"),
     (Infra, Exact, "zig-out", Project, "Zig binary output"),
     // Docker
@@ -128,9 +170,21 @@ register_artifacts![
         Project,
         "Local Docker configuration/context"
     ),
-    (Docker, Prefix, "docker-build-", Project, "Docker build artifacts"),
+    (
+        Docker,
+        Prefix,
+        "docker-build-",
+        Project,
+        "Docker build artifacts"
+    ),
     // Prefixes
-    (Other, Prefix, "cmake-build-", Project, "CMake build directory"),
+    (
+        Other,
+        Prefix,
+        "cmake-build-",
+        Project,
+        "CMake build directory"
+    ),
     // Global Caches (Cache Tier)
     (Core, Exact, "registry", Cache, "Cargo registry cache"),
     (Core, Exact, "index", Cache, "Cargo index cache"),
