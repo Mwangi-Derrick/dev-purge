@@ -86,9 +86,9 @@ fn is_protected_home_subpath(path: &Path, tier: ScanTier) -> bool {
     if tier < ScanTier::Deep {
         if let Some(local) = local_app_data {
             if path == local
-                || path.starts_with(&local.join("Local"))
-                || path.starts_with(&local.join("LocalLow"))
-                || path.starts_with(&local.join("Temp"))
+                || path.starts_with(local.join("Local"))
+                || path.starts_with(local.join("LocalLow"))
+                || path.starts_with(local.join("Temp"))
             {
                 return true;
             }
