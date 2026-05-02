@@ -2,10 +2,11 @@ use crate::domain::{
     config::PurgeConfig,
     impls::{OsSafetyChecker, ParallelScanner, StandardCleaner},
     safety,
-    traits::{Cleaner, SafetyChecker, Scanner},
+    traits::{Cleaner, SafetyChecker, ScanTier, Scanner},
 };
 use crate::ui::{confirm, preview};
 use anyhow::{Context, Result};
+use std::io::{self, Write};
 
 pub fn run() -> Result<()> {
     let cli = crate::cli::parse();
@@ -13,10 +14,41 @@ pub fn run() -> Result<()> {
     let scan_root = std::fs::canonicalize(&cli.path)
         .with_context(|| format!("failed to find path: {:?}", cli.path))?;
 
-    safety::check(&scan_root)?;
+    let tier = if cli.aggressive {
+        ScanTier::Aggressive
+    } else if cli.deep {
+        ScanTier::Deep
+    } else if cli.cache {
+        ScanTier::Cache
+    } else {
+        ScanTier::Project
+    };
+
+    if tier == ScanTier::Aggressive && !cli.yes {
+        println!("\n🔴 AGGRESSIVE MODE WARNING");
+        println!("This will clear system caches including:");
+        println!("  • Docker build cache (dangling layers only)");
+        println!("  • Package manager caches (apt, pacman, yay)");
+        println!("  • All user application caches");
+        println!("\nRunning containers and installed packages are preserved.");
+        println!("Caches will be rebuilt automatically when needed.\n");
+
+        print!("Type 'yes i understand' to continue: ");
+        io::stdout().flush()?;
+
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+
+        if input.trim() != "yes i understand" {
+            println!("Cancelled.");
+            return Ok(());
+        }
+    }
+
+    safety::check(&scan_root, tier)?;
 
     // Compose the default pipeline using traits
-    let config = PurgeConfig::hardcoded();
+    let config = PurgeConfig::for_tier(tier);
     let scanner = ParallelScanner::new(config);
     let safety_checker = OsSafetyChecker;
     let cleaner = StandardCleaner;
@@ -35,7 +67,7 @@ pub fn run() -> Result<()> {
         .into_iter()
         .filter(|result| {
             if result.artifact_type == crate::domain::traits::ArtifactType::Physical {
-                safety_checker.is_safe(&result.path)
+                safety_checker.is_safe(&result.path, tier)
             } else {
                 true
             }
