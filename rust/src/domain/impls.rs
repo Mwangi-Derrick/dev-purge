@@ -47,32 +47,41 @@ impl ParallelScanner {
 impl Scanner for ParallelScanner {
     fn scan(&self, root: &Path) -> Result<Vec<ScanResult>> {
         let patterns = self.config.patterns();
+        let tier = self.config.tier;
         let results: Mutex<Vec<ScanResult>> = Mutex::new(Vec::new());
 
         WalkDir::new(root)
             .follow_links(false)
             .into_iter()
+            .filter_entry(|e| {
+                // Early skip of protected entries to save time and avoid permission errors
+                let name = e.file_name();
+                !os::is_protected_entry_name(name, tier)
+            })
             .par_bridge()
-            .try_for_each(|entry| -> Result<()> {
-                let entry = entry?;
+            .for_each(|entry| {
+                let entry = match entry {
+                    Ok(e) => e,
+                    Err(_) => return, // Skip entries we can't access
+                };
                 let path = entry.path();
 
                 if entry.file_type().is_dir()
                     && matches_any_pattern(path, entry.file_name(), patterns)
                 {
                     if let Ok(_metadata) = entry.metadata() {
-                        let size = estimate_dir_size(path)?;
-                        let result = ScanResult {
-                            path: path.to_path_buf(),
-                            size_bytes: size,
-                            category: CleanupCategory::BuildArtifact, // TODO: categorize based on pattern
-                            artifact_type: ArtifactType::Physical,
-                        };
-                        results.lock().unwrap().push(result);
+                        if let Ok(size) = estimate_dir_size(path) {
+                            let result = ScanResult {
+                                path: path.to_path_buf(),
+                                size_bytes: size,
+                                category: CleanupCategory::BuildArtifact, // TODO: categorize based on pattern
+                                artifact_type: ArtifactType::Physical,
+                            };
+                            results.lock().unwrap().push(result);
+                        }
                     }
                 }
-                Ok(())
-            })?;
+            });
 
         let mut final_results = results.into_inner().unwrap();
         final_results.sort_by_key(|r| std::cmp::Reverse(r.size_bytes));
