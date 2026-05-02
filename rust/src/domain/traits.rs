@@ -64,10 +64,23 @@ pub trait Scanner {
     fn scan(&self, root: &Path) -> Result<Vec<ScanResult>>;
 }
 
+/// Tiers of scanning depth and safety.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum ScanTier {
+    /// Only project-level build artifacts (safest).
+    Project,
+    /// Include global tool caches (e.g., ~/.cargo, ~/.npm).
+    Cache,
+    /// Include application caches (e.g., Library/Caches, AppData).
+    Deep,
+    /// Include system-level caches (e.g., Docker, package managers).
+    Aggressive,
+}
+
 /// Trait for checking if paths are safe to delete.
 pub trait SafetyChecker {
-    /// Return true if the path is safe to delete.
-    fn is_safe(&self, path: &Path) -> bool;
+    /// Return true if the path is safe to delete at the given tier.
+    fn is_safe(&self, path: &Path, tier: ScanTier) -> bool;
 }
 
 /// Trait for performing cleanup operations.
