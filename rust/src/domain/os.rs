@@ -36,6 +36,7 @@ pub enum OsFamily {
 pub enum ProtectedPathCategory {
     System,
     IdeConfig,
+    IdeExtension,
     ToolBinary,
     ToolCache,
     ProjectMetadata,
@@ -145,13 +146,27 @@ const PROTECTED_PATH_RULES: &[ProtectedPathRuleTuple] = &[
         None,
         "Windows program files x86",
     ),
+    (
+        ProtectedPathCategory::System,
+        OsFamily::Windows,
+        None,
+        Some("Programs"),
+        "Windows programs installation",
+    ),
     // IDE configurations and caches
     (
         ProtectedPathCategory::IdeConfig,
         OsFamily::Any,
         None,
         Some(".vscode"),
-        "VS Code settings and extensions",
+        "VS Code settings",
+    ),
+    (
+        ProtectedPathCategory::IdeExtension,
+        OsFamily::Any,
+        None,
+        Some("extensions"),
+        "IDE extensions",
     ),
     (
         ProtectedPathCategory::IdeConfig,
@@ -335,6 +350,7 @@ fn is_category_protected(category: ProtectedPathCategory, tier: ScanTier) -> boo
         ScanTier::Aggressive => {
             category == ProtectedPathCategory::System
                 || category == ProtectedPathCategory::ProjectMetadata
+                || category == ProtectedPathCategory::IdeExtension
         }
     }
 }
@@ -352,6 +368,29 @@ pub fn is_protected_entry_name(name: &OsStr, tier: ScanTier) -> bool {
                 && matches_os_family(*os)
                 && is_category_protected(*category, tier)
         })
+}
+
+pub fn is_safe(path: &Path, tier: ScanTier) -> bool {
+    if is_protected_root(path, tier) {
+        return false;
+    }
+
+    let path_str = path.to_string_lossy().to_string().replace('\\', "/");
+
+    // Stricter path-based checks for extensions and programs
+    if path_str.contains(".vscode/extensions")
+        || path_str.contains(".antigravity/extensions")
+        || path_str.contains(".cursor/extensions")
+        || path_str.contains("AppData/Local/Programs")
+    {
+        return false;
+    }
+
+    !path.components().any(|comp| {
+        comp.as_os_str()
+            .to_str()
+            .is_some_and(|s| is_protected_entry_name(s.as_ref(), tier))
+    })
 }
 
 pub fn is_protected_root(path: &Path, tier: ScanTier) -> bool {
