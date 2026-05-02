@@ -1,7 +1,7 @@
 //! Linux-specific path protection rules.
 
-use super::unix::{is_protected_home_subpath, BASE_RULES};
 use super::is_category_protected;
+use super::unix::{is_protected_home_subpath, BASE_RULES};
 use crate::domain::traits::ScanTier;
 use std::path::Path;
 

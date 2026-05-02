@@ -116,16 +116,8 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
         None,
         Some("c:\\program files (x86)"),
     ),
-    (
-        ProtectedPathCategory::System,
-        Some("Programs"),
-        None,
-    ),
-    (
-        ProtectedPathCategory::IdeConfig,
-        Some(".vscode"),
-        None,
-    ),
+    (ProtectedPathCategory::System, Some("Programs"), None),
+    (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
         ProtectedPathCategory::IdeExtension,
         Some("extensions"),
@@ -134,11 +126,7 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::IdeConfig, Some(".idea"), None),
     (ProtectedPathCategory::IdeConfig, Some(".cursor"), None),
     (ProtectedPathCategory::IdeConfig, Some("AppData"), None),
-    (
-        ProtectedPathCategory::ProjectMetadata,
-        Some(".git"),
-        None,
-    ),
+    (ProtectedPathCategory::ProjectMetadata, Some(".git"), None),
     (
         ProtectedPathCategory::ProjectMetadata,
         Some(".github"),
@@ -149,20 +137,8 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
         Some(".gitignore"),
         None,
     ),
-    (
-        ProtectedPathCategory::SecretConfig,
-        Some(".env"),
-        None,
-    ),
-    (
-        ProtectedPathCategory::ToolBinary,
-        Some(".cargo"),
-        None,
-    ),
-    (
-        ProtectedPathCategory::ToolCache,
-        Some(".cargo"),
-        None,
-    ),
+    (ProtectedPathCategory::SecretConfig, Some(".env"), None),
+    (ProtectedPathCategory::ToolBinary, Some(".cargo"), None),
+    (ProtectedPathCategory::ToolCache, Some(".cargo"), None),
     (ProtectedPathCategory::ToolCache, Some(".npm"), None),
 ];
