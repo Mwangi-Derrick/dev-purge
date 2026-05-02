@@ -9,31 +9,33 @@ use std::path::{Path, PathBuf};
 pub fn check(cwd: &Path, tier: ScanTier) -> Result<()> {
     let cwd = canonicalize_best_effort(cwd);
 
-    if tier == ScanTier::Project && is_home_dir(&cwd)? {
-        eprintln!(
-            "{}  Run dev-purge from a projects directory, not your home folder.\n   {}",
-            "✗".red(),
-            "cd ~/projects && dev-purge".dimmed()
-        );
-        bail!("refusing to run from home directory");
-    }
+    if tier == ScanTier::Project {
+        if is_home_dir(&cwd)? {
+            eprintln!(
+                "{}  Run dev-purge from a projects directory, not your home folder.\n   {}",
+                "✗".red(),
+                "cd ~/projects && dev-purge".dimmed()
+            );
+            bail!("refusing to run from home directory");
+        }
 
-    if is_system_dir(&cwd) {
-        eprintln!(
-            "{}  Refusing to run from a system directory: {}",
-            "✗".red(),
-            display_path_for_humans(&cwd).dimmed()
-        );
-        bail!("refusing to run from system directory");
-    }
+        if is_system_dir(&cwd) {
+            eprintln!(
+                "{}  Refusing to run from a system directory: {}",
+                "✗".red(),
+                display_path_for_humans(&cwd).dimmed()
+            );
+            bail!("refusing to run from system directory");
+        }
 
-    if os::is_protected_root(&cwd, tier) {
-        eprintln!(
-            "{}  Refusing to run from a protected directory: {}",
-            "✗".red(),
-            display_path_for_humans(&cwd).dimmed()
-        );
-        bail!("refusing to run from protected directory");
+        if os::is_protected_root(&cwd, tier) {
+            eprintln!(
+                "{}  Refusing to run from a protected directory: {}",
+                "✗".red(),
+                display_path_for_humans(&cwd).dimmed()
+            );
+            bail!("refusing to run from protected directory");
+        }
     }
 
     Ok(())

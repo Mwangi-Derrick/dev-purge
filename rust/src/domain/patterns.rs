@@ -61,10 +61,34 @@ use PatternKind::*;
 register_artifacts![
     // Core / Language-agnostic
     (Core, Exact, "target", Project, "Rust build artifacts"),
-    (Core, Guarded("package.json"), "dist", Project, "Node.js distribution folder"),
-    (Core, Guarded("tsconfig.json"), "dist", Project, "TypeScript distribution folder"),
-    (Core, Guarded("CMakeLists.txt"), "build", Project, "CMake build artifacts"),
-    (Core, Guarded("Makefile"), "build", Project, "Makefile build artifacts"),
+    (
+        Core,
+        Guarded("package.json"),
+        "dist",
+        Project,
+        "Node.js distribution folder"
+    ),
+    (
+        Core,
+        Guarded("tsconfig.json"),
+        "dist",
+        Project,
+        "TypeScript distribution folder"
+    ),
+    (
+        Core,
+        Guarded("CMakeLists.txt"),
+        "build",
+        Project,
+        "CMake build artifacts"
+    ),
+    (
+        Core,
+        Guarded("Makefile"),
+        "build",
+        Project,
+        "Makefile build artifacts"
+    ),
     (Core, Exact, "out", Project, "Generic output directory"),
     // Python Ecosystem
     (
