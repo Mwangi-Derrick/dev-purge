@@ -15,6 +15,18 @@ pub struct Cli {
     #[arg(short, long)]
     pub yes: bool,
 
+    /// Include global tool caches (~/.cargo, ~/.npm, etc).
+    #[arg(long)]
+    pub cache: bool,
+
+    /// Include application caches (macOS Library/Caches, Windows AppData).
+    #[arg(long)]
+    pub deep: bool,
+
+    /// Include system caches (Docker, apt, pacman) - requires confirmation.
+    #[arg(long)]
+    pub aggressive: bool,
+
     /// Optional path to scan (defaults to current directory).
     #[arg(default_value = ".")]
     pub path: std::path::PathBuf,
