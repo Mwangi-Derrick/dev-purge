@@ -245,9 +245,9 @@ $ dev-purge --dry-run
    ✓ .git
    ... (12 more items)
 
-[DRY RUN] Would delete: ./vox-rs/target
-[DRY RUN] Would delete: ./geocore-api/target
-[DRY RUN] Would delete: ./summafy-frontend/node_modules
+
+[DRY RUN] Would delete: .*/target
+[DRY RUN] Would delete: .*/node_modules
 [DRY RUN] Would clean: cargo registry cache (estimated 8GB)
 
 # Estimated space to recover: ~30GB
