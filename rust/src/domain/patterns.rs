@@ -3,6 +3,7 @@
 //! Engineered for clarity, safety, and rapid extensibility.
 //! This registry serves as the heuristic engine for artifact detection.
 
+use crate::domain::traits::ScanTier;
 use std::ffi::OsStr;
 use std::path::Path;
 
@@ -35,17 +36,19 @@ pub struct Pattern {
     pub category: Category,
     pub kind: PatternKind,
     pub name: &'static str,
+    pub tier: ScanTier,
     pub description: &'static str,
 }
 
 macro_rules! register_artifacts {
-    ($( ($cat:ident, $kind:expr, $name:expr, $desc:expr) ),* $(,)?) => {
+    ($( ($cat:ident, $kind:expr, $name:expr, $tier:ident, $desc:expr) ),* $(,)?) => {
         const ARTIFACT_REGISTRY: &[Pattern] = &[
             $(
                 Pattern {
                     category: Category::$cat,
                     kind: $kind,
                     name: $name,
+                    tier: ScanTier::$tier,
                     description: $desc,
                 }
             ),*
