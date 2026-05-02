@@ -67,7 +67,7 @@ pub fn print(root: &Path, findings: &[Finding]) {
         let remaining_count = count - display_count;
         let remaining_bytes: u64 = findings[display_count..].iter().map(|f| f.bytes).sum();
         println!(
-            "\n  {} smaller items totaling {}",
+            "\n  {} smaller items totaling {} (not shown)",
             remaining_count.to_string().dimmed(),
             format_bytes(remaining_bytes).dimmed()
         );
