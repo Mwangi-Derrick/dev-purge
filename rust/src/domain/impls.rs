@@ -82,7 +82,7 @@ impl ParallelScanner {
         points
             .into_iter()
             .filter(|p| p.exists())
-            .map(|p| std::fs::canonicalize(p).unwrap_or_else(|_| p))
+            .map(|p| std::fs::canonicalize(&p).unwrap_or(p))
             .collect()
     }
 }
