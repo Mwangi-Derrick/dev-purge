@@ -410,8 +410,7 @@ fn is_protected_home_subpath(path: &Path, tier: ScanTier) -> bool {
             return true;
         }
 
-        if tier < ScanTier::Deep {
-            if matches_any_path_prefix(
+        if tier < ScanTier::Deep && if matches_any_path_prefix(
                 path,
                 local_app_data.as_deref(),
                 &["Local", "LocalLow", "Temp"],
@@ -419,7 +418,6 @@ fn is_protected_home_subpath(path: &Path, tier: ScanTier) -> bool {
             {
                 return true;
             }
-        }
 
         return false;
     }
