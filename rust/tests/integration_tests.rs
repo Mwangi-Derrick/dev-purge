@@ -9,7 +9,7 @@ use std::path::Path;
 use dev_purge::domain::{
     config::PurgeConfig,
     impls::{OsSafetyChecker, ParallelScanner, StandardCleaner},
-    traits::{Cleaner, SafetyChecker, Scanner},
+    traits::{Cleaner, SafetyChecker, ScanTier, Scanner},
 };
 
 #[test]
@@ -37,7 +37,7 @@ fn test_parallel_scanner_finds_artifacts() {
         .write_binary(b"console.log('test')")
         .unwrap();
 
-    // Create a protected directory that should be ignored
+    // Create a protected directory that should be ignored by patterns (tier Project)
     temp.child(".git").create_dir_all().unwrap();
     temp.child(".git")
         .child("config")
@@ -65,19 +65,24 @@ fn test_parallel_scanner_finds_artifacts() {
 #[test]
 fn test_os_safety_checker() {
     let checker = OsSafetyChecker;
+    let tier = ScanTier::Project;
 
     // Safe paths
-    assert!(checker.is_safe(Path::new("target")));
-    assert!(checker.is_safe(Path::new("node_modules")));
+    assert!(checker.is_safe(Path::new("target"), tier));
+    assert!(checker.is_safe(Path::new("node_modules"), tier));
 
     // Protected paths
-    assert!(!checker.is_safe(Path::new(".git")));
-    assert!(!checker.is_safe(Path::new(".vscode")));
+    assert!(!checker.is_safe(Path::new(".git"), tier));
+    assert!(!checker.is_safe(Path::new(".vscode"), tier));
+
+    // Test tier-based safety
+    assert!(!checker.is_safe(Path::new(".cargo"), ScanTier::Project));
+    assert!(checker.is_safe(Path::new(".cargo"), ScanTier::Cache));
 
     #[cfg(windows)]
-    assert!(!checker.is_safe(Path::new("C:\\Windows\\System32")));
+    assert!(!checker.is_safe(Path::new("C:\\Windows\\System32"), tier));
     #[cfg(not(windows))]
-    assert!(!checker.is_safe(Path::new("/usr/bin")));
+    assert!(!checker.is_safe(Path::new("/usr/bin"), tier));
 }
 
 #[test]
