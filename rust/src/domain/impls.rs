@@ -103,7 +103,7 @@ impl Scanner for ParallelScanner {
         entry_points.sort();
         entry_points.dedup();
 
-        // Filter out entry points that are sub-paths of other entry points to avoid double scanning
+        // Filter out entry points that are sub-paths of other entry points
         let mut final_entry_points = Vec::new();
         for i in 0..entry_points.len() {
             let mut is_subpath = false;
@@ -127,73 +127,67 @@ impl Scanner for ParallelScanner {
         pb.set_message("Scanning...");
         pb.enable_steady_tick(std::time::Duration::from_millis(100));
 
-        for entry_root in final_entry_points {
-            let current_entry_root = entry_root.clone();
-            WalkDir::new(&entry_root)
-                .follow_links(false)
-                .into_iter()
-                .filter_entry(move |e| {
-                    let path = e.path();
-                    // Hard system exclusions to avoid stalling in huge system folders
-                    let path_str = path.to_string_lossy().to_string().replace('\\', "/");
-                    if path_str.contains("/Windows")
-                        || path_str.contains("/Program Files")
-                        || path_str.contains("/$Recycle.Bin")
-                        || path_str.contains("/proc")
-                        || path_str.contains("/sys")
-                        || path_str.contains("/dev")
-                    {
-                        return false;
-                    }
+        final_entry_points.par_iter().for_each(|entry_root| {
+            let mut it = WalkDir::new(entry_root).follow_links(false).into_iter();
 
-                    // Always allow the entry root itself
-                    if path == current_entry_root {
-                        return true;
-                    }
+            loop {
+                let entry = match it.next() {
+                    None => break,
+                    Some(Ok(e)) => e,
+                    Some(Err(_)) => continue,
+                };
 
-                    // Early skip of protected entries
-                    let name = e.file_name();
-                    !os::is_protected_entry_name(name, tier)
-                        || matches_any_pattern(path, name, patterns)
-                })
-                .par_bridge()
-                .for_each(|entry| {
-                    let entry = match entry {
-                        Ok(e) => e,
-                        Err(_) => return, // Skip entries we can't access
-                    };
-                    let path = entry.path();
+                let path = entry.path();
+                let name = entry.file_name();
 
-                    if entry.file_type().is_dir()
-                        && matches_any_pattern(path, entry.file_name(), patterns)
-                    {
-                        if let Ok(_metadata) = entry.metadata() {
-                            if let Ok(size) = estimate_dir_size(path) {
-                                let result = ScanResult {
-                                    path: path.to_path_buf(),
-                                    size_bytes: size,
-                                    category: CleanupCategory::BuildArtifact, // TODO: categorize based on pattern
-                                    artifact_type: ArtifactType::Physical,
-                                };
-                                results.lock().unwrap().push(result);
-                                pb.set_message(format!(
-                                    "Found {} items...",
-                                    results.lock().unwrap().len()
-                                ));
-                            }
-                        }
+                // 1. Hard system exclusions
+                let path_str = path.to_string_lossy().to_string().replace('\\', "/");
+                if path_str.contains("/Windows")
+                    || path_str.contains("/Program Files")
+                    || path_str.contains("/$Recycle.Bin")
+                    || path_str.contains("/msys64")
+                    || path_str.contains("/proc")
+                    || path_str.contains("/sys")
+                    || path_str.contains("/dev")
+                {
+                    it.skip_current_dir();
+                    continue;
+                }
+
+                // 2. Allow the root itself
+                if path == entry_root {
+                    continue;
+                }
+
+                // 3. Match patterns
+                if entry.file_type().is_dir() && matches_any_pattern(path, name, patterns) {
+                    if let Ok(size) = estimate_dir_size(path) {
+                        results.lock().unwrap().push(ScanResult {
+                            path: path.to_path_buf(),
+                            size_bytes: size,
+                            category: CleanupCategory::BuildArtifact,
+                            artifact_type: ArtifactType::Physical,
+                        });
+                        pb.set_message(format!("Found {} items...", results.lock().unwrap().len()));
                     }
-                });
-        }
+                    // IMPORTANT: Once matched, do NOT look inside. Skip contents.
+                    it.skip_current_dir();
+                    continue;
+                }
+
+                // 4. Safety skip for non-matches
+                if entry.file_type().is_dir() && !os::is_safe(path, tier) {
+                    it.skip_current_dir();
+                    continue;
+                }
+            }
+        });
 
         pb.finish_and_clear();
 
         let mut final_results = results.into_inner().unwrap();
-
-        // Final deduplication by canonical path to be absolutely sure
         final_results.sort_by(|a, b| a.path.cmp(&b.path));
         final_results.dedup_by(|a, b| a.path == b.path);
-
         final_results.sort_by_key(|r| std::cmp::Reverse(r.size_bytes));
         Ok(final_results)
     }
@@ -204,12 +198,7 @@ pub struct OsSafetyChecker;
 
 impl SafetyChecker for OsSafetyChecker {
     fn is_safe(&self, path: &Path, tier: ScanTier) -> bool {
-        !os::is_protected_root(path, tier)
-            && !path.components().any(|comp| {
-                comp.as_os_str()
-                    .to_str()
-                    .is_some_and(|s| os::is_protected_entry_name(s.as_ref(), tier))
-            })
+        os::is_safe(path, tier)
     }
 }
 
@@ -245,7 +234,14 @@ impl Cleaner for StandardCleaner {
                         if permanent {
                             std::fs::remove_dir_all(&result.path).map_err(|e| anyhow::anyhow!(e))
                         } else {
-                            trash::delete(&result.path).map_err(|e| anyhow::anyhow!(e))
+                            trash::delete(&result.path).map_err(|e| {
+                                #[cfg(windows)]
+                                {
+                                    anyhow::anyhow!("{}\n   Tip: Windows aborted the trash operation. Files might be in use or paths too long.\n   Try running with: dev-purge --permanent", e)
+                                }
+                                #[cfg(not(windows))]
+                                { anyhow::anyhow!(e) }
+                            })
                         }
                     }
                     ArtifactType::DockerImage(id) => {
