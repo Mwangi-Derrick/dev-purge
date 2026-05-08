@@ -23,7 +23,7 @@ pub fn check(cwd: &Path, tier: ScanTier) -> Result<()> {
             eprintln!(
                 "{}  Refusing to run from a system directory: {}",
                 "✗".red(),
-                display_path_for_humans(&cwd).dimmed()
+                display_path_on_cmd(&cwd).dimmed()
             );
             bail!("refusing to run from system directory");
         }
@@ -32,7 +32,7 @@ pub fn check(cwd: &Path, tier: ScanTier) -> Result<()> {
             eprintln!(
                 "{}  Refusing to run from a protected directory: {}",
                 "✗".red(),
-                display_path_for_humans(&cwd).dimmed()
+                display_path_on_cmd(&cwd).dimmed()
             );
             bail!("refusing to run from protected directory");
         }
@@ -92,6 +92,6 @@ fn canonicalize_best_effort(path: &Path) -> PathBuf {
     fs::canonicalize(path).unwrap_or_else(|_| path.to_path_buf())
 }
 
-fn display_path_for_humans(path: &Path) -> String {
+fn display_path_on_cmd(path: &Path) -> String {
     path.to_string_lossy().replace('\\', "/")
 }
