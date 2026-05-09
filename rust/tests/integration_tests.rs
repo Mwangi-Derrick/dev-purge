@@ -100,7 +100,7 @@ fn test_standard_cleaner_dry_run() {
 
     let config = PurgeConfig::hardcoded();
     let scanner = ParallelScanner::new(config);
-    let cleaner = StandardCleaner;
+    let cleaner = StandardCleaner::new(false);
 
     let results = scanner.scan(temp.path()).unwrap();
     let stats = cleaner.clean(&results, true, false).unwrap(); // dry run
@@ -129,7 +129,7 @@ fn test_standard_cleaner_actual_deletion() {
 
     let config = PurgeConfig::hardcoded();
     let scanner = ParallelScanner::new(config);
-    let cleaner = StandardCleaner;
+    let cleaner = StandardCleaner::new(false);
 
     let results = scanner.scan(temp.path()).unwrap();
     let stats = cleaner.clean(&results, false, true).unwrap(); // actual deletion (permanent for test)
