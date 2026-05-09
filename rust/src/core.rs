@@ -1,6 +1,7 @@
 use crate::domain::{
     config::PurgeConfig,
     impls::{OsSafetyChecker, ParallelScanner, StandardCleaner},
+    reduce::{reduce_scan_results, ReduceOptions},
     safety,
     traits::{Cleaner, SafetyChecker, ScanTier, Scanner},
 };
@@ -70,7 +71,7 @@ pub fn run() -> Result<()> {
     let config = PurgeConfig::for_tier(tier);
     let scanner = ParallelScanner::new(config);
     let safety_checker = OsSafetyChecker;
-    let cleaner = StandardCleaner;
+    let cleaner = StandardCleaner::new(cli.verbose);
 
     // Scan for candidates
     let mut scan_results = scanner.scan(&scan_root)?;
@@ -95,6 +96,8 @@ pub fn run() -> Result<()> {
         })
         .collect();
 
+    let safe_results = reduce_scan_results(safe_results, ReduceOptions::default());
+
     // Convert to UI format (temporary compatibility)
     let findings: Vec<_> = safe_results
         .iter()
@@ -115,6 +118,9 @@ pub fn run() -> Result<()> {
     }
 
     // Clean up
+    if !cli.verbose {
+        println!("\nCleaning {} items... (use --verbose for per-item output)\n", findings.len());
+    }
     let stats = cleaner.clean(&safe_results, false, cli.permanent)?;
     preview::print_summary(stats.total_bytes_freed, stats.errors.len() as u64);
 
