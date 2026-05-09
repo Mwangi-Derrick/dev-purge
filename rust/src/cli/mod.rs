@@ -27,6 +27,10 @@ pub struct Cli {
     #[arg(long)]
     pub aggressive: bool,
 
+    /// Print each deleted item (very noisy).
+    #[arg(long)]
+    pub verbose: bool,
+
     /// Optional path to scan (defaults to current directory).
     #[arg(default_value = ".")]
     pub path: std::path::PathBuf,
