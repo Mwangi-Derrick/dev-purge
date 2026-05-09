@@ -271,22 +271,22 @@ impl Cleaner for StandardCleaner {
                 match op_result {
                     Ok(_) => {
                         if self.verbose {
-                        println!(
-                            "✓ {}: {} ({} bytes)",
-                            match &result.artifact_type {
-                                ArtifactType::Physical =>
-                                    if permanent {
-                                        "Permanently deleted"
-                                    } else {
-                                        "Moved to trash"
-                                    },
-                                ArtifactType::DockerImage(_) => "Removed Docker image",
-                                ArtifactType::DockerContainer(_) => "Removed Docker container",
-                                _ => "Cleaned",
-                            },
-                            result.path.display(),
-                            result.size_bytes
-                        );
+                            println!(
+                                "✓ {}: {} ({} bytes)",
+                                match &result.artifact_type {
+                                    ArtifactType::Physical =>
+                                        if permanent {
+                                            "Permanently deleted"
+                                        } else {
+                                            "Moved to trash"
+                                        },
+                                    ArtifactType::DockerImage(_) => "Removed Docker image",
+                                    ArtifactType::DockerContainer(_) => "Removed Docker container",
+                                    _ => "Cleaned",
+                                },
+                                result.path.display(),
+                                result.size_bytes
+                            );
                         }
                         stats.total_bytes_freed += result.size_bytes;
                         stats.items_deleted += 1;

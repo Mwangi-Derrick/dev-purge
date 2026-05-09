@@ -133,10 +133,7 @@ fn cargo_build_dir_for_out(out_dir: &Path) -> Option<PathBuf> {
     }
 
     // Variant B: .../<profile>/build/<crate>/out
-    if build_dir
-        .parent()
-        .is_some_and(|p| is_cargo_profile_dir(p))
-    {
+    if build_dir.parent().is_some_and(|p| is_cargo_profile_dir(p)) {
         return Some(build_dir.to_path_buf());
     }
 
@@ -189,7 +186,12 @@ mod tests {
     #[test]
     fn reduces_descendants_when_parent_selected() {
         let results = vec![sr("C:/p/target", 100), sr("C:/p/target/debug", 50)];
-        let reduced = reduce_scan_results(results, ReduceOptions { cargo_out_promotion_min: 99 });
+        let reduced = reduce_scan_results(
+            results,
+            ReduceOptions {
+                cargo_out_promotion_min: 99,
+            },
+        );
         assert_eq!(reduced.len(), 1);
         assert_eq!(reduced[0].path, PathBuf::from("C:/p/target"));
     }

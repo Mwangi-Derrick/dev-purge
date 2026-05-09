@@ -119,7 +119,10 @@ pub fn run() -> Result<()> {
 
     // Clean up
     if !cli.verbose {
-        println!("\nCleaning {} items... (use --verbose for per-item output)\n", findings.len());
+        println!(
+            "\nCleaning {} items... (use --verbose for per-item output)\n",
+            findings.len()
+        );
     }
     let stats = cleaner.clean(&safe_results, false, cli.permanent)?;
     preview::print_summary(stats.total_bytes_freed, stats.errors.len() as u64);
