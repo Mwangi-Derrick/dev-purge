@@ -203,7 +203,15 @@ impl SafetyChecker for OsSafetyChecker {
 }
 
 /// Default cleaner that deletes files and reports progress.
-pub struct StandardCleaner;
+pub struct StandardCleaner {
+    verbose: bool,
+}
+
+impl StandardCleaner {
+    pub fn new(verbose: bool) -> Self {
+        Self { verbose }
+    }
+}
 
 impl Cleaner for StandardCleaner {
     fn clean(
@@ -232,7 +240,7 @@ impl Cleaner for StandardCleaner {
                 let op_result = match &result.artifact_type {
                     ArtifactType::Physical => {
                         if permanent {
-                            std::fs::remove_dir_all(&result.path).map_err(|e| anyhow::anyhow!(e))
+                            remove_path_recursively(&result.path)
                         } else {
                             trash::delete(&result.path).map_err(|e| {
                                 #[cfg(windows)]
@@ -262,6 +270,7 @@ impl Cleaner for StandardCleaner {
 
                 match op_result {
                     Ok(_) => {
+                        if self.verbose {
                         println!(
                             "✓ {}: {} ({} bytes)",
                             match &result.artifact_type {
@@ -278,6 +287,7 @@ impl Cleaner for StandardCleaner {
                             result.path.display(),
                             result.size_bytes
                         );
+                        }
                         stats.total_bytes_freed += result.size_bytes;
                         stats.items_deleted += 1;
                     }
@@ -291,6 +301,17 @@ impl Cleaner for StandardCleaner {
         }
 
         Ok(stats)
+    }
+}
+
+fn remove_path_recursively(path: &Path) -> Result<()> {
+    let md = std::fs::symlink_metadata(path);
+    let is_dir = md.as_ref().is_ok_and(|m| m.is_dir());
+
+    if is_dir {
+        std::fs::remove_dir_all(path).map_err(|e| anyhow::anyhow!(e))
+    } else {
+        std::fs::remove_file(path).map_err(|e| anyhow::anyhow!(e))
     }
 }
 
