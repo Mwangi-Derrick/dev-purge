@@ -3,6 +3,7 @@ pub mod impls;
 pub mod integrations;
 pub mod os;
 pub mod patterns;
+pub mod reduce;
 pub mod safety;
 pub mod size;
 pub mod traits;
