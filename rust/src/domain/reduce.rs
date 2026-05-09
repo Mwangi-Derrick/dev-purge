@@ -133,7 +133,7 @@ fn cargo_build_dir_for_out(out_dir: &Path) -> Option<PathBuf> {
     }
 
     // Variant B: .../<profile>/build/<crate>/out
-    if build_dir.parent().is_some_and(|p| is_cargo_profile_dir(p)) {
+    if build_dir.parent().is_some_and(is_cargo_profile_dir) {
         return Some(build_dir.to_path_buf());
     }
 
