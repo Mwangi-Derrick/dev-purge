@@ -163,4 +163,12 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::System, None, Some("C:/Program Files/yarn/bin/yarn.cmd")),
     (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/yarn/bin/yarn.cmd")),
 
+    // Windows
+    (ProtectedPathCategory::System, None, Some("%APPDATA%/npm/node_modules/pnpm/bin/pnpm.cmd")),
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.pnpm-global/bin/pnpm.cmd")),
+    (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/pnpm/pnpm.exe")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files/pnpm/pnpm.exe")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/pnpm/pnpm.exe"))
+
+
 ];
