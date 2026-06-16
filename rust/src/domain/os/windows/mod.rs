@@ -106,6 +106,11 @@ fn is_protected_home_subpath(path: &Path, tier: ScanTier) -> bool {
 
 const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::System, None, Some("c:\\windows")),
+    // Windows system
+    (ProtectedPathCategory::System, None, Some("%WINDIR%/Temp")),
+    (ProtectedPathCategory::System, None, Some("%TEMP%")),
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/AppData/Local/Temp")),
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/AppData/Local/Caches")),
     (
         ProtectedPathCategory::System,
         None,
