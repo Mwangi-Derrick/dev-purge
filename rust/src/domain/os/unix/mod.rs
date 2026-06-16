@@ -60,11 +60,21 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("/var/cache/zypp")),          // Zypper
     (ProtectedPathCategory::System, None, Some("/var/cache/snapd")),         // Snap
 
+    // Linux
+    (ProtectedPathCategory::System, None, Some("~/.bun/bin/bun")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/bun")),
+    (ProtectedPathCategory::System, None, Some("/opt/bun/bin/bun"))
+
     // macOS system
     (ProtectedPathCategory::System, None, Some("~/Library/Caches")),
     (ProtectedPathCategory::System, None, Some("/Library/Caches")),
     (ProtectedPathCategory::System, None, Some("~/Library/Logs")),
     (ProtectedPathCategory::System, None, Some("/Library/Logs")),
+
+    // macOS
+    (ProtectedPathCategory::System, None, Some("~/.bun/bin/bun")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/bun")),
+    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/bun")),
 
     (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
