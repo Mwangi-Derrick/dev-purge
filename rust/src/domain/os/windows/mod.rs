@@ -157,4 +157,10 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::System, None, Some("C:/Program Files/bun/bin/bun.exe")),
     (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/bun/bin/bun.exe")),
 
+    // Windows
+    (ProtectedPathCategory::System, None, Some("%APPDATA%/npm/node_modules/yarn/bin/yarn.cmd")),
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.yarn/bin/yarn.cmd")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files/yarn/bin/yarn.cmd")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/yarn/bin/yarn.cmd")),
+
 ];
