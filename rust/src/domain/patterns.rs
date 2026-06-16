@@ -136,7 +136,14 @@ register_artifacts![
     (Bun, Exact, "node_modules", Project, "Bun dependencies"),
     (Bun, Exact, "bun-build", Project, "Bun build output"),
     (Bun, Exact, "bun-cache", Cache, "Bun package cache"),
-
+     // Yarn specific
+    (Node, Exact, ".yarn", Project, "Yarn cache and config"),
+    (Node, Exact, ".yarn-cache", Cache, "Yarn cache directory"),
+    (Node, Exact, "yarn-error.log", Project, "Yarn error log"),
+    
+    // pnpm specific
+    (Node, Exact, ".pnpm-store", Cache, "pnpm store directory"),
+    (Node, Exact, "pnpm-lock.yaml", Project, "pnpm lockfile"),
 
     // Go / PHP / Ruby
     (Go, Exact, "vendor", Project, "Dependency vendor directory"),
