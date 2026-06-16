@@ -76,6 +76,22 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("/usr/local/bin/bun")),
     (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/bun")),
 
+    // Linux
+    (ProtectedPathCategory::System, None, Some("/usr/bin/node")),
+    (ProtectedPathCategory::System, None, Some("/usr/bin/npm")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/node")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/npm")),
+    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/node")),
+    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/npm")),
+
+    // macOS
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/node")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/npm")),
+    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/node")),
+    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/npm")),
+    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/node")),
+    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/npm")),
+
     (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
         ProtectedPathCategory::IdeExtension,
