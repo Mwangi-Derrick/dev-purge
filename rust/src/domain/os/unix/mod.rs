@@ -92,6 +92,17 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/node")),
     (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/npm")),
 
+    // Linux
+    (ProtectedPathCategory::System, None, Some("/usr/bin/yarn")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/yarn")),
+    (ProtectedPathCategory::System, None, Some("~/.yarn/bin/yarn")),
+    (ProtectedPathCategory::System, None, Some("/opt/yarn/bin/yarn")),
+
+    // macOS
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/yarn")),
+    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/yarn")),
+    (ProtectedPathCategory::System, None, Some("~/.yarn/bin/yarn")),
+
     (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
         ProtectedPathCategory::IdeExtension,
