@@ -103,6 +103,16 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/yarn")),
     (ProtectedPathCategory::System, None, Some("~/.yarn/bin/yarn")),
 
+    // Linux
+    (ProtectedPathCategory::System, None, Some("~/.deno/bin/deno")),
+    (ProtectedPathCategory::System, None, Some("/usr/bin/deno")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/deno")),
+
+    // macOS
+    (ProtectedPathCategory::System, None, Some("~/.deno/bin/deno")),
+    (ProtectedPathCategory::System, None, Some("/usr/local/bin/deno")),
+    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/deno")),
+
     (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
         ProtectedPathCategory::IdeExtension,

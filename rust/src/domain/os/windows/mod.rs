@@ -170,5 +170,11 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::System, None, Some("C:/Program Files/pnpm/pnpm.exe")),
     (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/pnpm/pnpm.exe"))
 
+    // Windows
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.deno/bin/deno.exe")),
+    (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/deno/deno.exe")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files/deno/deno.exe"))
+
+
 
 ];
