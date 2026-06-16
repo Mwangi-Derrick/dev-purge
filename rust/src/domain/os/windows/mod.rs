@@ -147,6 +147,11 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::ToolCache, Some(".cargo"), None),
     (ProtectedPathCategory::ToolCache, Some(".npm"), None),
     // Windows
+    (ProtectedPathCategory::System, None, Some("C:/Program Files/nodejs/node.exe")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files/nodejs/npm.cmd")),
+    (ProtectedPathCategory::System, None, Some("%APPDATA%/npm/npm.cmd")),
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/AppData/Roaming/npm/npm.cmd")),
+    // Windows
     (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.bun/bin/bun.exe")),
     (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/bun/bin/bun.exe")),
     (ProtectedPathCategory::System, None, Some("C:/Program Files/bun/bin/bun.exe")),
