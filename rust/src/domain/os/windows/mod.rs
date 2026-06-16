@@ -109,8 +109,16 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     // Windows system
     (ProtectedPathCategory::System, None, Some("%WINDIR%/Temp")),
     (ProtectedPathCategory::System, None, Some("%TEMP%")),
-    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/AppData/Local/Temp")),
-    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/AppData/Local/Caches")),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%USERPROFILE%/AppData/Local/Temp"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%USERPROFILE%/AppData/Local/Caches"),
+    ),
     (
         ProtectedPathCategory::System,
         None,
@@ -147,34 +155,101 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::ToolCache, Some(".cargo"), None),
     (ProtectedPathCategory::ToolCache, Some(".npm"), None),
     // Windows
-    (ProtectedPathCategory::System, None, Some("C:/Program Files/nodejs/node.exe")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files/nodejs/npm.cmd")),
-    (ProtectedPathCategory::System, None, Some("%APPDATA%/npm/npm.cmd")),
-    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/AppData/Roaming/npm/npm.cmd")),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files/nodejs/node.exe"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files/nodejs/npm.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%APPDATA%/npm/npm.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%USERPROFILE%/AppData/Roaming/npm/npm.cmd"),
+    ),
     // Windows
-    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.bun/bin/bun.exe")),
-    (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/bun/bin/bun.exe")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files/bun/bin/bun.exe")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/bun/bin/bun.exe")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%USERPROFILE%/.bun/bin/bun.exe"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%LOCALAPPDATA%/bun/bin/bun.exe"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files/bun/bin/bun.exe"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files (x86)/bun/bin/bun.exe"),
+    ),
     // Windows
-    (ProtectedPathCategory::System, None, Some("%APPDATA%/npm/node_modules/yarn/bin/yarn.cmd")),
-    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.yarn/bin/yarn.cmd")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files/yarn/bin/yarn.cmd")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/yarn/bin/yarn.cmd")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%APPDATA%/npm/node_modules/yarn/bin/yarn.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%USERPROFILE%/.yarn/bin/yarn.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files/yarn/bin/yarn.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files (x86)/yarn/bin/yarn.cmd"),
+    ),
     // Windows
-    (ProtectedPathCategory::System, None, Some("%APPDATA%/npm/node_modules/pnpm/bin/pnpm.cmd")),
-    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.pnpm-global/bin/pnpm.cmd")),
-    (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/pnpm/pnpm.exe")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files/pnpm/pnpm.exe")),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%APPDATA%/npm/node_modules/pnpm/bin/pnpm.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%USERPROFILE%/.pnpm-global/bin/pnpm.cmd"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%LOCALAPPDATA%/pnpm/pnpm.exe"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files/pnpm/pnpm.exe"),
+    ),
     (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/pnpm/pnpm.exe"))
 
     // Windows
     (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.deno/bin/deno.exe")),
-    (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/deno/deno.exe")),
-    (ProtectedPathCategory::System, None, Some("C:/Program Files/deno/deno.exe"))
-
-
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("%LOCALAPPDATA%/deno/deno.exe"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("C:/Program Files/deno/deno.exe"),
+    ),
 ];

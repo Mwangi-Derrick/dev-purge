@@ -53,16 +53,31 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("/sbin")),
     (ProtectedPathCategory::System, None, Some("/lib")),
     // Linux system caches
-    (ProtectedPathCategory::System, None, Some("/var/cache/apt/archives")),  // APT
-    (ProtectedPathCategory::System, None, Some("/var/cache/pacman/pkg")),    // Pacman
-    (ProtectedPathCategory::System, None, Some("/var/cache/dnf")),           // DNF
-    (ProtectedPathCategory::System, None, Some("/var/cache/yum")),           // YUM
-    (ProtectedPathCategory::System, None, Some("/var/cache/zypp")),          // Zypper
-    (ProtectedPathCategory::System, None, Some("/var/cache/snapd")),         // Snap
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/var/cache/apt/archives"),
+    ), // APT
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/var/cache/pacman/pkg"),
+    ), // Pacman
+    (ProtectedPathCategory::System, None, Some("/var/cache/dnf")), // DNF
+    (ProtectedPathCategory::System, None, Some("/var/cache/yum")), // YUM
+    (ProtectedPathCategory::System, None, Some("/var/cache/zypp")), // Zypper
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/var/cache/snapd"),
+    ), // Snap
     // Linux
     (ProtectedPathCategory::System, None, Some("~/.bun/bin/bun")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/bun")),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/bun"),
+    ),
     (ProtectedPathCategory::System, None, Some("/opt/bun/bin/bun"))
 
     // macOS system
@@ -70,49 +85,133 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("/Library/Caches")),
     (ProtectedPathCategory::System, None, Some("~/Library/Logs")),
     (ProtectedPathCategory::System, None, Some("/Library/Logs")),
-
     // macOS
     (ProtectedPathCategory::System, None, Some("~/.bun/bin/bun")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/bun")),
-    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/bun")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/bun"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/homebrew/bin/bun"),
+    ),
     // Linux
     (ProtectedPathCategory::System, None, Some("/usr/bin/node")),
     (ProtectedPathCategory::System, None, Some("/usr/bin/npm")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/node")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/npm")),
-    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/node")),
-    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/npm")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/node"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/npm"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.nvm/versions/node/*/bin/node"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.nvm/versions/node/*/bin/npm"),
+    ),
     // macOS
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/node")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/npm")),
-    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/node")),
-    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/npm")),
-    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/node")),
-    (ProtectedPathCategory::System, None, Some("~/.nvm/versions/node/*/bin/npm")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/node"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/npm"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/homebrew/bin/node"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/homebrew/bin/npm"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.nvm/versions/node/*/bin/node"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.nvm/versions/node/*/bin/npm"),
+    ),
     // Linux
     (ProtectedPathCategory::System, None, Some("/usr/bin/yarn")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/yarn")),
-    (ProtectedPathCategory::System, None, Some("~/.yarn/bin/yarn")),
-    (ProtectedPathCategory::System, None, Some("/opt/yarn/bin/yarn")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/yarn"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.yarn/bin/yarn"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/yarn/bin/yarn"),
+    ),
     // macOS
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/yarn")),
-    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/yarn")),
-    (ProtectedPathCategory::System, None, Some("~/.yarn/bin/yarn")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/yarn"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/homebrew/bin/yarn"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.yarn/bin/yarn"),
+    ),
     // Linux
-    (ProtectedPathCategory::System, None, Some("~/.deno/bin/deno")),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.deno/bin/deno"),
+    ),
     (ProtectedPathCategory::System, None, Some("/usr/bin/deno")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/deno")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/deno"),
+    ),
     // macOS
-    (ProtectedPathCategory::System, None, Some("~/.deno/bin/deno")),
-    (ProtectedPathCategory::System, None, Some("/usr/local/bin/deno")),
-    (ProtectedPathCategory::System, None, Some("/opt/homebrew/bin/deno")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/.deno/bin/deno"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/usr/local/bin/deno"),
+    ),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/homebrew/bin/deno"),
+    ),
     (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
         ProtectedPathCategory::IdeExtension,
