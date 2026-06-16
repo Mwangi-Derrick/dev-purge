@@ -22,6 +22,7 @@ pub enum Category {
     Core,
     Python,
     Node,
+    Bun,
     Go,
     Java,
     DotNet,
@@ -128,6 +129,15 @@ register_artifacts![
     (Node, Exact, ".turbo", Project, "Turborepo build cache"),
     (Node, Exact, ".vite", Project, "Vite build cache"),
     (Node, Exact, "_cacache", Cache, "npm cache internals"),
+      // Bun specific
+    (Bun, Exact, "bun.lockb", Project, "Bun lockfile binary"),
+    (Bun, Exact, "bun.lock", Project, "Bun lockfile"),
+    (Bun, Exact, ".bun", Cache, "Bun cache directory"),
+    (Bun, Exact, "node_modules", Project, "Bun dependencies"),
+    (Bun, Exact, "bun-build", Project, "Bun build output"),
+    (Bun, Exact, "bun-cache", Cache, "Bun package cache"),
+
+
     // Go / PHP / Ruby
     (Go, Exact, "vendor", Project, "Dependency vendor directory"),
     (Go, Exact, "cache", Cache, "Go build cache"),
