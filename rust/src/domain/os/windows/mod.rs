@@ -146,4 +146,10 @@ const RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &[
     (ProtectedPathCategory::ToolBinary, Some(".cargo"), None),
     (ProtectedPathCategory::ToolCache, Some(".cargo"), None),
     (ProtectedPathCategory::ToolCache, Some(".npm"), None),
+    // Windows
+    (ProtectedPathCategory::System, None, Some("%USERPROFILE%/.bun/bin/bun.exe")),
+    (ProtectedPathCategory::System, None, Some("%LOCALAPPDATA%/bun/bin/bun.exe")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files/bun/bin/bun.exe")),
+    (ProtectedPathCategory::System, None, Some("C:/Program Files (x86)/bun/bin/bun.exe")),
+
 ];
