@@ -78,10 +78,17 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
         None,
         Some("/usr/local/bin/bun"),
     ),
-    (ProtectedPathCategory::System, None, Some("/opt/bun/bin/bun")),
-
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("/opt/bun/bin/bun"),
+    ),
     // macOS system
-    (ProtectedPathCategory::System, None, Some("~/Library/Caches")),
+    (
+        ProtectedPathCategory::System,
+        None,
+        Some("~/Library/Caches"),
+    ),
     (ProtectedPathCategory::System, None, Some("/Library/Caches")),
     (ProtectedPathCategory::System, None, Some("~/Library/Logs")),
     (ProtectedPathCategory::System, None, Some("/Library/Logs")),
