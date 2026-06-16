@@ -52,6 +52,13 @@ pub const BASE_RULES: &[(ProtectedPathCategory, Option<&str>, Option<&str>)] = &
     (ProtectedPathCategory::System, None, Some("/bin")),
     (ProtectedPathCategory::System, None, Some("/sbin")),
     (ProtectedPathCategory::System, None, Some("/lib")),
+    // Linux system caches
+    (ProtectedPathCategory::System, None, Some("/var/cache/apt/archives")),  // APT
+    (ProtectedPathCategory::System, None, Some("/var/cache/pacman/pkg")),    // Pacman
+    (ProtectedPathCategory::System, None, Some("/var/cache/dnf")),           // DNF
+    (ProtectedPathCategory::System, None, Some("/var/cache/yum")),           // YUM
+    (ProtectedPathCategory::System, None, Some("/var/cache/zypp")),          // Zypper
+    (ProtectedPathCategory::System, None, Some("/var/cache/snapd")),         // Snap
     (ProtectedPathCategory::IdeConfig, Some(".vscode"), None),
     (
         ProtectedPathCategory::IdeExtension,
