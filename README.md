@@ -93,7 +93,7 @@ dev-purge . --dry-run
 
 **Output:**
 ```
-🛡️  DEV-PURGE: Safe Cleanup Script
+🛡️  DEV-PURGE: Safe Cleanup
 🔍 Performing safety checks...
 ✓ Safety checks passed
 
@@ -123,7 +123,7 @@ When prompted, type `y` and watch your storage come back. 🎉
 
 ## 🛡️ What Gets Protected?
 
-This script **will never touch:**
+This tool **will never touch:**
 
 ```
 .vscode/              # VS Code settings & extensions
@@ -239,7 +239,7 @@ The trait-based design makes it easy for contributors to extend dev-purge for ne
 $ cd ~/projects
 $ dev-purge --dry-run
 
-🛡️  DEV-PURGE: Safe Cleanup Script
+🛡️  DEV-PURGE: Safe Cleanup
 📋 Protected items (WILL NOT DELETE):
    ✓ .vscode
    ✓ .git
@@ -371,7 +371,7 @@ x
 
 ### "Permission Denied" Errors in Output
 
-Normal on Windows/Git Bash—the script safely ignores system folder permission errors. They won't prevent cleanup.
+Normal on Windows/Git Bash—the tool safely ignores system folder permission errors. They won't prevent cleanup.
 
 ### VS Code / IDE Stops Working After Cleanup
 
@@ -388,7 +388,7 @@ npm install         # Node.js
 
 If problems persist, reinstall the IDE (your code is safe—only caches were deleted).
 
-### Script Isn't Finding Anything to Delete
+### Cli Tool Isn't Finding Anything to Delete
 
 You might already be clean! Or, run it from a different directory:
 
@@ -446,7 +446,7 @@ MIT License—feel free to use, modify, and redistribute.
 
 ## 🙏 Acknowledgments
 
-Built for developers juggling **Rust**, **Go**, **Node.js**, and **Docker** across multiple projects. If you're building startups or infrastructure, you know the pain. This script is the answer.
+Built for developers juggling **Rust**, **Go**, **Node.js**, and **Docker** across multiple projects. If you're building startups or infrastructure, you know the pain. This tool is the answer.
 
 Inspired by real incidents of "0MB SSD panic" during critical builds. 💀
 
